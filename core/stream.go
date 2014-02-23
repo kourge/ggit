@@ -90,6 +90,7 @@ func (stream *Stream) Decode(reader io.Reader) error {
 	if lenString, err := r.ReadString(byte(0)); err != nil {
 		return err
 	} else {
+		lenString = lenString[:len(lenString)-1]
 		length, err := strconv.ParseInt(lenString, 10, 64)
 		if err != nil {
 			return err
