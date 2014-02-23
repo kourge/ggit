@@ -41,7 +41,7 @@ var (
 	_fixtureGitIgnoreString string = "100644 blob 458a3c1f135f68e9650d344525cd12a46d7048f5\t.gitignore"
 )
 
-func TestTreeEntryReader(t *testing.T) {
+func TestTreeEntry_Reader(t *testing.T) {
 	treeEntry := _fixtureTreeEntry
 	var actual []byte
 	var expected []byte = []byte(_fixtureTreeEntryString)
@@ -55,7 +55,7 @@ func TestTreeEntryReader(t *testing.T) {
 	}
 }
 
-func TestTreeEntryDecode(t *testing.T) {
+func TestTreeEntry_Decode(t *testing.T) {
 	var actual *TreeEntry = &TreeEntry{}
 	var expected *TreeEntry = &_fixtureGitIgnoreTreeEntry
 	err := actual.Decode(strings.NewReader(_fixtureGitIgnoreString))
@@ -69,7 +69,7 @@ func TestTreeEntryDecode(t *testing.T) {
 	}
 }
 
-func TestTreeEntryFromObjectBlob(t *testing.T) {
+func TestTreeEntryFromObject_Blob(t *testing.T) {
 	blob := _fixtureGitignoreBlob
 	name := ".gitignore"
 	treeEntry, err := TreeEntryFromObject(blob, _frw_r__r__, name)
@@ -95,7 +95,7 @@ func TestTreeEntryFromObjectBlob(t *testing.T) {
 	}
 }
 
-func TestTreeEntryFromObjectTree(t *testing.T) {
+func TestTreeEntryFromObject_Tree(t *testing.T) {
 }
 
 type unknownObject struct{}
@@ -105,7 +105,7 @@ func (o *unknownObject) Size() int              { return 0 }
 func (o *unknownObject) Reader() io.Reader      { return new(bytes.Buffer) }
 func (o *unknownObject) Decode(io.Reader) error { return nil }
 
-func TestTreeEntryFromObjectUnknown(t *testing.T) {
+func TestTreeEntryFromObject_Unknown(t *testing.T) {
 	var unknown Object = &unknownObject{}
 	var _, err = TreeEntryFromObject(unknown, _frw_r__r__, "foobar")
 
@@ -114,7 +114,7 @@ func TestTreeEntryFromObjectUnknown(t *testing.T) {
 	}
 }
 
-func TestTreeEntrySliceSort(t *testing.T) {
+func TestTreeEntrySlice_Sort(t *testing.T) {
 	_1 := TreeEntry{
 		_frw_r__r__, "blob", "3618cb8c4131839885ac273d74ee2eb8a7dd6970", "README.md",
 	}

@@ -36,7 +36,7 @@ var (
 	_fixture3Stream *Stream = &Stream{Object: _fixture3.Object}
 )
 
-func TestStreamReaderBlob(t *testing.T) {
+func TestStream_Reader_Blob(t *testing.T) {
 	 var actual []byte
 	 var expected []byte = []byte(_fixture1.Body)
 
@@ -49,7 +49,7 @@ func TestStreamReaderBlob(t *testing.T) {
 	 }
 }
 
-func TestStreamReaderTree(t *testing.T) {
+func TestStream_Reader_Tree(t *testing.T) {
 	 var actual []byte
 	 var expected []byte = []byte(_fixture3.Body)
 
@@ -62,7 +62,7 @@ func TestStreamReaderTree(t *testing.T) {
 	 }
 }
 
-func TestStreamBytesBlob(t *testing.T) {
+func TestStream_Bytes_Blob(t *testing.T) {
 	var actual []byte = _fixture1Stream.Bytes()
 	var expected []byte = []byte(_fixture1.Body)
 
@@ -71,7 +71,7 @@ func TestStreamBytesBlob(t *testing.T) {
 	}
 }
 
-func TestStreamBytesTree(t *testing.T) {
+func TestStream_Bytes_Tree(t *testing.T) {
 	var actual []byte = _fixture3Stream.Bytes()
 	var expected []byte = []byte(_fixture3.Body)
 
@@ -80,7 +80,7 @@ func TestStreamBytesTree(t *testing.T) {
 	}
 }
 
-func TestStreamHashBlob(t *testing.T) {
+func TestStream_Hash_Blob(t *testing.T) {
 	var actual Sha1 = _fixture1Stream.Hash()
 	var expected Sha1 = _fixture1.Hash
 
@@ -89,7 +89,7 @@ func TestStreamHashBlob(t *testing.T) {
 	}
 }
 
-func TestStreamHashTree(t *testing.T) {
+func TestStream_Hash_Tree(t *testing.T) {
 	var actual Sha1 = _fixture3Stream.Hash()
 	var expected Sha1 = _fixture3.Hash
 
@@ -98,7 +98,7 @@ func TestStreamHashTree(t *testing.T) {
 	}
 }
 
-func TestStreamRehash(t *testing.T) {
+func TestStream_Rehash(t *testing.T) {
 	stream := &Stream{Object: _fixture1.Object}
 
 	if actual, expected := stream.Hash(), _fixture1.Hash; actual != expected {
@@ -120,7 +120,7 @@ func TestStreamRehash(t *testing.T) {
 	}
 }
 
-func TestStreamDecodeBlob(t *testing.T) {
+func TestStream_Decode_Blob(t *testing.T) {
 	var actual *Blob
 	var expected *Blob = _fixture1.Object.(*Blob)
 	stream := &Stream{}
@@ -136,7 +136,7 @@ func TestStreamDecodeBlob(t *testing.T) {
 	}
 }
 
-func TestStreamDecodeTree(t *testing.T) {
+func TestStream_Decode_Tree(t *testing.T) {
 	var actual []TreeEntry
 	var expected []TreeEntry = _fixture3.Object.(*Tree).Entries
 	stream := &Stream{}

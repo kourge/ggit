@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGitmodeStringRegular(t *testing.T) {
+func TestGitmode_String_Regular(t *testing.T) {
 	var mode GitMode = GitModeRegular | GitModeReadWritable
 	var actual string = mode.String()
 	var expected string = "100644"
@@ -14,7 +14,7 @@ func TestGitmodeStringRegular(t *testing.T) {
 	}
 }
 
-func TestGitmodeStringDir(t *testing.T) {
+func TestGitmode_String_Dir(t *testing.T) {
 	var mode GitMode = GitModeDir | GitModeNullPerm
 	var actual string = mode.String()
 	var expected string = "040000"

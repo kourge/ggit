@@ -10,7 +10,7 @@ var (
 	_fixtureBlob    Blob   = Blob{Content: _fixtureContent}
 )
 
-func TestBlobType(t *testing.T) {
+func TestBlob_Type(t *testing.T) {
 	var actual string = _fixtureBlob.Type()
 	var expected string = "blob"
 
@@ -19,7 +19,7 @@ func TestBlobType(t *testing.T) {
 	}
 }
 
-func TestBlobSize(t *testing.T) {
+func TestBlob_Size(t *testing.T) {
 	var actual int = _fixtureBlob.Size()
 	var expected int = len(_fixtureContent)
 
@@ -28,7 +28,7 @@ func TestBlobSize(t *testing.T) {
 	}
 }
 
-func TestBlobReader(t *testing.T) {
+func TestBlob_Reader(t *testing.T) {
 	var actual []byte
 	var expected []byte = _fixtureContent
 
@@ -41,7 +41,7 @@ func TestBlobReader(t *testing.T) {
 	}
 }
 
-func TestBlobDecode(t *testing.T) {
+func TestBlob_Decode(t *testing.T) {
 	blob := &Blob{}
 	var actual []byte
 	var expected []byte = _fixtureContent

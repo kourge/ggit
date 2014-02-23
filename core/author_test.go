@@ -11,7 +11,7 @@ var (
 	_fixtureAuthorString string = "John Doe <john@example.com>"
 )
 
-func TestAuthorReader(t *testing.T) {
+func TestAuthor_Reader(t *testing.T) {
 	var actual []byte
 	var expected []byte = []byte(_fixtureAuthorString)
 
@@ -24,7 +24,7 @@ func TestAuthorReader(t *testing.T) {
 	}
 }
 
-func TestAuthorString(t *testing.T) {
+func TestAuthor_String(t *testing.T) {
 	var actual string = _fixtureAuthor.String()
 	var expected string = _fixtureAuthorString
 
@@ -33,7 +33,7 @@ func TestAuthorString(t *testing.T) {
 	}
 }
 
-func TestAuthorDecode(t *testing.T) {
+func TestAuthor_Decode(t *testing.T) {
 	var actual *Author = &Author{}
 	var expected *Author = &_fixtureAuthor
 	err := actual.Decode(strings.NewReader(_fixtureAuthorString))

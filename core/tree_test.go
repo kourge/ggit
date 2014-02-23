@@ -29,7 +29,7 @@ var (
 	}}
 )
 
-func TestTreeType(t *testing.T) {
+func TestTree_Type(t *testing.T) {
 	var actual string = _fixtureTree.Type()
 	var expected string = "tree"
 
@@ -38,7 +38,7 @@ func TestTreeType(t *testing.T) {
 	}
 }
 
-func TestTreeSize(t *testing.T) {
+func TestTree_Size(t *testing.T) {
 	var actual int
 	var expected = len([]byte(_fixtureLicenseTreeEntryString + "\n" + _fixtureReadmeTreeEntryString))
 
@@ -51,7 +51,7 @@ func TestTreeSize(t *testing.T) {
 	}
 }
 
-func TestTreeReader(t *testing.T) {
+func TestTree_Reader(t *testing.T) {
 	var actual []byte
 	var expected = []byte(_fixtureLicenseTreeEntryString + "\n" + _fixtureReadmeTreeEntryString)
 
@@ -64,7 +64,7 @@ func TestTreeReader(t *testing.T) {
 	}
 }
 
-func TestTreeDecode(t *testing.T) {
+func TestTree_Decode(t *testing.T) {
 	var actual *Tree = &Tree{}
 	var expected *Tree = &_fixtureTree
 

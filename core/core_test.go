@@ -9,7 +9,7 @@ var (
 	_fixtureMessage string = "PC Load Letter"
 )
 
-func TestCommonDie(t *testing.T) {
+func TestDie(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			expected := "fatal: " + _fixtureMessage
