@@ -69,6 +69,9 @@ func (stream *Stream) Rehash() (checksum Sha1) {
 	return
 }
 
+// Decode parses an object represented in its entirety by a byte sequence
+// yielded from an io.Reader and reconstructs the object with the correct
+// type as inferred from the sequence's header.
 func (stream *Stream) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 
