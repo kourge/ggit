@@ -1,9 +1,9 @@
 package core
 
 import (
-	"testing"
 	"bytes"
 	"reflect"
+	"testing"
 )
 
 type streamFixture struct {
@@ -15,16 +15,16 @@ type streamFixture struct {
 var (
 	_fixture1 = streamFixture{
 		Object: &Blob{Content: []byte("what is up, doc?")},
-		Body: "blob 16\x00what is up, doc?",
-		Hash: Sha1("bd9dbf5aae1a3862dd1526723246b20206e5fc37"),
+		Body:   "blob 16\x00what is up, doc?",
+		Hash:   Sha1("bd9dbf5aae1a3862dd1526723246b20206e5fc37"),
 	}
 	_fixture2 = streamFixture{
 		Object: &Blob{Content: []byte("my hovercraft is full of eels")},
-		Body: "blob 29\x00my hovercraft is full of eels",
-		Hash: Sha1("7400f1589a11d1b912d6a90574d4f836087599b1"),
+		Body:   "blob 29\x00my hovercraft is full of eels",
+		Hash:   Sha1("7400f1589a11d1b912d6a90574d4f836087599b1"),
 	}
 	_fixture3 = streamFixture{
-		Object: &Tree{Entries: []TreeEntry {
+		Object: &Tree{Entries: []TreeEntry{
 			{_frw_r__r__, "blob", _fixture1.Hash, "blob1"},
 			{_frw_r__r__, "blob", _fixture2.Hash, "blob2"},
 		}},
@@ -37,29 +37,29 @@ var (
 )
 
 func TestStream_Reader_Blob(t *testing.T) {
-	 var actual []byte
-	 var expected []byte = []byte(_fixture1.Body)
+	var actual []byte
+	var expected []byte = []byte(_fixture1.Body)
 
-	 buffer := new(bytes.Buffer)
-	 buffer.ReadFrom(_fixture1Stream.Reader())
-	 actual = buffer.Bytes()
+	buffer := new(bytes.Buffer)
+	buffer.ReadFrom(_fixture1Stream.Reader())
+	actual = buffer.Bytes()
 
-	 if !bytes.Equal(actual, expected) {
+	if !bytes.Equal(actual, expected) {
 		t.Error("stream.Reader() did not generate same byte sequence")
-	 }
+	}
 }
 
 func TestStream_Reader_Tree(t *testing.T) {
-	 var actual []byte
-	 var expected []byte = []byte(_fixture3.Body)
+	var actual []byte
+	var expected []byte = []byte(_fixture3.Body)
 
-	 buffer := new(bytes.Buffer)
-	 buffer.ReadFrom(_fixture3Stream.Reader())
-	 actual = buffer.Bytes()
+	buffer := new(bytes.Buffer)
+	buffer.ReadFrom(_fixture3Stream.Reader())
+	actual = buffer.Bytes()
 
-	 if !bytes.Equal(actual, expected) {
+	if !bytes.Equal(actual, expected) {
 		t.Error("stream.Reader() did not generate same byte sequence")
-	 }
+	}
 }
 
 func TestStream_Bytes_Blob(t *testing.T) {
