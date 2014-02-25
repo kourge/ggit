@@ -1,10 +1,12 @@
-package core
+package config
 
 import (
 	"bufio"
 	"bytes"
 	"io"
 	"strings"
+
+	"github.com/kourge/goit/core"
 )
 
 // A ConfigSection represents a section in a Git config file. It has its own
@@ -14,7 +16,7 @@ type ConfigSection struct {
 	Entries []ConfigEntry
 }
 
-var _ Encoder = ConfigSection{}
+var _ core.Encoder = ConfigSection{}
 
 func (section ConfigSection) bytesBuffer() *bytes.Buffer {
 	buffer := new(bytes.Buffer)

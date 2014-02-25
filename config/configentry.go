@@ -1,4 +1,4 @@
-package core
+package config
 
 import (
 	"bufio"
@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/kourge/goit/core"
 )
 
 // A ConfigEntry represents a key-value pair in a Git config file. The key is an
@@ -18,7 +20,7 @@ type ConfigEntry struct {
 	Value interface{}
 }
 
-var _ EncodeDecoder = &ConfigEntry{}
+var _ core.EncodeDecoder = &ConfigEntry{}
 
 // Reader returns an io.Reader that wraps around the string returned by String().
 func (entry ConfigEntry) Reader() io.Reader {

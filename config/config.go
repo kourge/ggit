@@ -1,10 +1,12 @@
-package core
+package config
 
 import (
 	"bufio"
 	"bytes"
 	"io"
 	"strings"
+
+	"github.com/kourge/goit/core"
 )
 
 // A Config represents a INI-style Git config file, composed of multiple
@@ -14,7 +16,7 @@ type Config struct {
 	Sections []ConfigSection
 }
 
-var _ EncodeDecoder = &Config{}
+var _ core.EncodeDecoder = &Config{}
 
 // Reader returns an io.Reader that, when read, prints out each section,
 // each separated by a blank line.
