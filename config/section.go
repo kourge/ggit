@@ -106,3 +106,78 @@ func (section *Section) Decode(reader io.Reader) error {
 	section.Entries = entries
 	return nil
 }
+
+// WalkSectionFunc is the type of the function called for each key-value pair
+// iterated by Walk. Its return value is inspected to determine whether the
+// iteration is short-circuited; when a WalkSectionFunc returns false, Walk
+// breaks out of the iteration loop.
+type WalkSectionFunc func(key string, value interface{}) (stop bool)
+
+// Walk iterates though the entries contained in this section, calling walkFn
+// for each key-value pair.
+func (section Section) Walk(walkFn WalkSectionFunc) {
+	for _, entry := range section.Entries {
+		stop := walkFn(entry.Key, entry.Value)
+		if stop {
+			break
+		}
+	}
+}
+
+// Len returns the number of key-value pairs in this section.
+func (section Section) Len() int {
+	return len(section.Entries)
+}
+
+// Get returns a pair in the form of (value, exists) given a key. If there
+// exists a value for the given key, exists will be true. Otherwise, it will be
+// false and value will be nil.
+func (section Section) Get(key string) (value interface{}, exists bool) {
+	for _, entry := range section.Entries {
+		if entry.Key == key {
+			return entry.Value, true
+		}
+	}
+
+	return
+}
+
+// Set either adds a key-value pair or, if the key already exists, associates
+// the given key to the provided value instead. If the former case is true,
+// Set returns true. Otherwise, it returns false.
+func (section *Section) Set(key string, value interface{}) (added bool) {
+	for i, entry := range section.Entries {
+		if entry.Key == key {
+			section.Entries[i].Value = value
+			return false
+		}
+	}
+
+	section.Entries = append(section.Entries, Entry{key, value})
+	return true
+}
+
+// Del removes the key-value pair for a given key or does nothing if no
+// key-value pair exists for the given key. If the former case is true, Del
+// returns true. Otherwise, it returns false.
+func (section *Section) Del(key string) (deleted bool) {
+	index := -1
+	for i, entry := range section.Entries {
+		if entry.Key == key {
+			index = i
+			break
+		}
+	}
+
+	deleted = index != -1
+	if deleted {
+		for i, length := index, len(section.Entries); i < length; i++ {
+			if i != length - 1 {
+				section.Entries[i] = section.Entries[i + 1]
+			}
+		}
+		section.Entries = section.Entries[:len(section.Entries)-1]
+	}
+
+	return
+}
