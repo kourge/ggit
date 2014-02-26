@@ -14,13 +14,13 @@ type sectionFixture struct {
 
 var (
 	_fixtureSection1 sectionFixture = sectionFixture{
-		OrderedSection: NewOrderedSection("core", []Entry{
+		OrderedSection: OrderedSection{"core", []Entry{
 			{"repositoryformatversion", int64(0)},
 			{"filemode", true},
 			{"diff", "auto"},
 			{"bare", false},
 			{"name", "John Doe"},
-		}...),
+		}},
 		String: `[core]
 	repositoryformatversion = 0
 	# comment 1

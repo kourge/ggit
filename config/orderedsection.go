@@ -5,8 +5,6 @@ import (
 	"bytes"
 	"io"
 	"strings"
-
-	"github.com/kourge/goit/core"
 )
 
 // A OrderedSection represents a section in a Git config file. It has its own
@@ -16,16 +14,22 @@ type OrderedSection struct {
 	entries []Entry
 }
 
-var _ core.Encoder = OrderedSection{}
+var _ Section = &OrderedSection{}
 
 // NewOrderedSection returns a OrderedSection named name that contains the items
 // in entries.
-func NewOrderedSection(name string, entries ...Entry) OrderedSection {
-	return OrderedSection{name: name, entries: entries}
+func NewOrderedSection(name string, entries ...Entry) Section {
+	return &OrderedSection{name: name, entries: entries}
+}
+
+// NewEmptyOrderedSection returns an blank OrderedSection with no name and no
+// entries.
+func NewEmptyOrderedSection() Section {
+	return &OrderedSection{}
 }
 
 // Name returns the name of this section.
-func (section OrderedSection) Name() string {
+func (section *OrderedSection) Name() string {
 	return section.name
 }
 
@@ -34,7 +38,7 @@ func (section *OrderedSection) SetName(name string) {
 	section.name = name
 }
 
-func (section OrderedSection) bytesBuffer() *bytes.Buffer {
+func (section *OrderedSection) bytesBuffer() *bytes.Buffer {
 	buffer := new(bytes.Buffer)
 
 	buffer.WriteRune('[')
@@ -55,11 +59,11 @@ func (section OrderedSection) bytesBuffer() *bytes.Buffer {
 // first line. Subsequent lines are the underlying Entry structs serialized in
 // order, each indented by a single horizontal tab rune '\t' and each separated
 // by a new line rune '\n'.
-func (section OrderedSection) Reader() io.Reader {
+func (section *OrderedSection) Reader() io.Reader {
 	return section.bytesBuffer()
 }
 
-func (section OrderedSection) lazyReader() io.Reader {
+func (section *OrderedSection) lazyReader() io.Reader {
 	offset := 3
 	readers := make([]io.Reader, len(section.entries)*3+offset)
 	readers[0] = bytes.NewReader([]byte{'['})
@@ -77,7 +81,7 @@ func (section OrderedSection) lazyReader() io.Reader {
 
 // String returns a string that is the result of draining the io.Reader returned
 // by Reader().
-func (section OrderedSection) String() string {
+func (section *OrderedSection) String() string {
 	return section.bytesBuffer().String()
 }
 
@@ -123,15 +127,9 @@ func (section *OrderedSection) Decode(reader io.Reader) error {
 	return nil
 }
 
-// WalkOrderedSectionFunc is the type of the function called for each key-value
-// pair iterated by Walk. Its return value is inspected to determine whether the
-// iteration is short-circuited; when a WalkOrderedSectionFunc returns false,
-// Walk breaks out of the iteration loop.
-type WalkOrderedSectionFunc func(key string, value interface{}) (stop bool)
-
 // Walk iterates though the entries contained in this section, calling walkFn
 // for each key-value pair.
-func (section OrderedSection) Walk(walkFn WalkOrderedSectionFunc) {
+func (section *OrderedSection) Walk(walkFn WalkSectionFunc) {
 	for _, entry := range section.entries {
 		stop := walkFn(entry.Key, entry.Value)
 		if stop {
@@ -141,14 +139,14 @@ func (section OrderedSection) Walk(walkFn WalkOrderedSectionFunc) {
 }
 
 // Len returns the number of key-value pairs in this section.
-func (section OrderedSection) Len() int {
+func (section *OrderedSection) Len() int {
 	return len(section.entries)
 }
 
 // Get returns a pair in the form of (value, exists) given a key. If there
 // exists a value for the given key, exists will be true. Otherwise, it will be
 // false and value will be nil.
-func (section OrderedSection) Get(key string) (value interface{}, exists bool) {
+func (section *OrderedSection) Get(key string) (value interface{}, exists bool) {
 	for _, entry := range section.entries {
 		if entry.Key == key {
 			return entry.Value, true
