@@ -15,7 +15,7 @@ type configEntryFixture struct {
 }
 
 type configSectionFixture struct {
-	ConfigSection
+	Section
 	String           string
 	NormalizedString string
 }
@@ -41,7 +41,7 @@ var (
 	}
 
 	_fixtureSection1 configSectionFixture = configSectionFixture{
-		ConfigSection: ConfigSection{"core", []Entry{
+		Section: Section{"core", []Entry{
 			{"repositoryformatversion", int64(0)},
 			{"filemode", true},
 			{"diff", "auto"},
@@ -67,7 +67,7 @@ var (
 	}
 
 	_fixtureConfig configFixture = configFixture{
-		Config: Config{[]ConfigSection{
+		Config: Config{[]Section{
 			{"user", []Entry{
 				{"name", "Jane Doe"},
 				{"email", "jane@example.com"},
@@ -132,8 +132,8 @@ func TestEntry_Decode(t *testing.T) {
 	}
 }
 
-func TestConfigSection_String(t *testing.T) {
-	var actual string = _fixtureSection1.ConfigSection.String()
+func TestSection_String(t *testing.T) {
+	var actual string = _fixtureSection1.Section.String()
 	var expected string = _fixtureSection1.NormalizedString
 
 	if actual != expected {
@@ -141,9 +141,9 @@ func TestConfigSection_String(t *testing.T) {
 	}
 }
 
-func TestConfigSection_Decode(t *testing.T) {
-	var actual *ConfigSection = &ConfigSection{}
-	var expected *ConfigSection = &_fixtureSection1.ConfigSection
+func TestSection_Decode(t *testing.T) {
+	var actual *Section = &Section{}
+	var expected *Section = &_fixtureSection1.Section
 
 	actual.Decode(strings.NewReader(_fixtureSection1.String))
 
@@ -174,7 +174,7 @@ func TestConfig_Decode(t *testing.T) {
 
 func ExampleConfig_Reader() {
 	defaultConfig := Config{
-		[]ConfigSection{
+		[]Section{
 			{"core", []Entry{
 				{"repositoryformatversion", int64(0)},
 				{"filemode", true},

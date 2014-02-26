@@ -9,16 +9,16 @@ import (
 	"github.com/kourge/goit/core"
 )
 
-// A ConfigSection represents a section in a Git config file. It has its own
-// name and a list of key-value pairs under it.
-type ConfigSection struct {
+// A Section represents a section in a Git config file. It has its own name and
+// a list of key-value pairs under it.
+type Section struct {
 	Name    string
 	Entries []Entry
 }
 
-var _ core.Encoder = ConfigSection{}
+var _ core.Encoder = Section{}
 
-func (section ConfigSection) bytesBuffer() *bytes.Buffer {
+func (section Section) bytesBuffer() *bytes.Buffer {
 	buffer := new(bytes.Buffer)
 
 	buffer.WriteRune('[')
@@ -39,11 +39,11 @@ func (section ConfigSection) bytesBuffer() *bytes.Buffer {
 // first line. Subsequent lines are the underlying Entry structs serialized in
 // order, each indented by a single horizontal tab rune '\t' and each separated
 // by a new line rune '\n'.
-func (section ConfigSection) Reader() io.Reader {
+func (section Section) Reader() io.Reader {
 	return section.bytesBuffer()
 }
 
-func (section ConfigSection) lazyReader() io.Reader {
+func (section Section) lazyReader() io.Reader {
 	offset := 3
 	readers := make([]io.Reader, len(section.Entries)*3+offset)
 	readers[0] = bytes.NewReader([]byte{'['})
@@ -61,11 +61,11 @@ func (section ConfigSection) lazyReader() io.Reader {
 
 // String returns a string that is the result of draining the io.Reader returned
 // by Reader().
-func (section ConfigSection) String() string {
+func (section Section) String() string {
 	return section.bytesBuffer().String()
 }
 
-// Decode parses bytes into a ConfigSection. This stream of bytes is assumed to
+// Decode parses bytes into a Section. This stream of bytes is assumed to
 // contain only a single section. If multiple sections appear, all entries will
 // be treated as if they were in a single section, and the last seen section's
 // name is considered to be this single section's name.
@@ -73,7 +73,7 @@ func (section ConfigSection) String() string {
 // Lines that start with the pound sign rune '#' or the semicolon rune ';' will
 // be treated as comment and ignored. Completely whitespace lines or blank lines
 // will also be ignored.
-func (section *ConfigSection) Decode(reader io.Reader) error {
+func (section *Section) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 	entries := make([]Entry, 0)
 
