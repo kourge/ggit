@@ -7,20 +7,20 @@ import (
 )
 
 type sectionFixture struct {
-	Section
+	OrderedSection
 	String           string
 	NormalizedString string
 }
 
 var (
 	_fixtureSection1 sectionFixture = sectionFixture{
-		Section: Section{"core", []Entry{
+		OrderedSection: NewOrderedSection("core", []Entry{
 			{"repositoryformatversion", int64(0)},
 			{"filemode", true},
 			{"diff", "auto"},
 			{"bare", false},
 			{"name", "John Doe"},
-		}},
+		}...),
 		String: `[core]
 	repositoryformatversion = 0
 	# comment 1
@@ -40,8 +40,8 @@ var (
 	}
 )
 
-func TestSection_String(t *testing.T) {
-	var actual string = _fixtureSection1.Section.String()
+func TestOrderedSection_String(t *testing.T) {
+	var actual string = _fixtureSection1.OrderedSection.String()
 	var expected string = _fixtureSection1.NormalizedString
 
 	if actual != expected {
@@ -49,9 +49,9 @@ func TestSection_String(t *testing.T) {
 	}
 }
 
-func TestSection_Decode(t *testing.T) {
-	var actual *Section = &Section{}
-	var expected *Section = &_fixtureSection1.Section
+func TestOrderedSection_Decode(t *testing.T) {
+	var actual *OrderedSection = &OrderedSection{}
+	var expected *OrderedSection = &_fixtureSection1.OrderedSection
 
 	actual.Decode(strings.NewReader(_fixtureSection1.String))
 
@@ -60,8 +60,8 @@ func TestSection_Decode(t *testing.T) {
 	}
 }
 
-func TestSection_Walk_Iterate(t *testing.T) {
-	section := &_fixtureSection1.Section
+func TestOrderedSection_Walk_Iterate(t *testing.T) {
+	section := &_fixtureSection1.OrderedSection
 	i := 0
 	section.Walk(func(k string, v interface{}) (stop bool) {
 		actualK, expectedK := k, section.entries[i].Key
@@ -79,8 +79,8 @@ func TestSection_Walk_Iterate(t *testing.T) {
 	})
 }
 
-func TestSection_Walk_Break(t *testing.T) {
-	section := &_fixtureSection1.Section
+func TestOrderedSection_Walk_Break(t *testing.T) {
+	section := &_fixtureSection1.OrderedSection
 	i := 0
 	section.Walk(func(k string, v interface{}) (stop bool) {
 		i += 1
@@ -93,11 +93,11 @@ func TestSection_Walk_Break(t *testing.T) {
 	}
 }
 
-func TestSection_Get(t *testing.T) {
+func TestOrderedSection_Get(t *testing.T) {
 	var actual interface{}
 	var expected interface{} = "John Doe"
 
-	section := &_fixtureSection1.Section
+	section := &_fixtureSection1.OrderedSection
 	actual, exists := section.Get("name")
 
 	if !exists {
@@ -109,11 +109,11 @@ func TestSection_Get(t *testing.T) {
 	}
 }
 
-func TestSection_Get_Nonexist(t *testing.T) {
+func TestOrderedSection_Get_Nonexist(t *testing.T) {
 	var actual interface{}
 	var expected interface{} = nil
 
-	section := &_fixtureSection1.Section
+	section := &_fixtureSection1.OrderedSection
 	actual, exists := section.Get("foobar")
 
 	if exists {
@@ -125,10 +125,10 @@ func TestSection_Get_Nonexist(t *testing.T) {
 	}
 }
 
-func TestSection_Set(t *testing.T) {
-	section := _fixtureSection1.Section
+func TestOrderedSection_Set(t *testing.T) {
+	section := _fixtureSection1.OrderedSection
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		var actual bool = section.Set("foo", "bar")
 		var expected bool = true
 
@@ -137,7 +137,7 @@ func TestSection_Set(t *testing.T) {
 		}
 	}(&section)
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual, _ := section.Get("foo")
 		expected := "bar"
 
@@ -147,10 +147,10 @@ func TestSection_Set(t *testing.T) {
 	}(&section)
 }
 
-func TestSection_Set_Exist(t *testing.T) {
-	var section Section = _fixtureSection1.Section
+func TestOrderedSection_Set_Exist(t *testing.T) {
+	var section OrderedSection = _fixtureSection1.OrderedSection
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		var actual bool = section.Set("bare", true)
 		var expected bool = false
 
@@ -159,7 +159,7 @@ func TestSection_Set_Exist(t *testing.T) {
 		}
 	}(&section)
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual, _ := section.Get("bare")
 		expected := true
 
@@ -169,10 +169,10 @@ func TestSection_Set_Exist(t *testing.T) {
 	}(&section)
 }
 
-func TestSection_Del(t *testing.T) {
-	var section Section = _fixtureSection1.Section
+func TestOrderedSection_Del(t *testing.T) {
+	var section OrderedSection = _fixtureSection1.OrderedSection
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual, expected := section.Del("bare"), true
 
 		if actual != expected {
@@ -180,7 +180,7 @@ func TestSection_Del(t *testing.T) {
 		}
 	}(&section)
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual1, actual2 := section.Get("bare")
 		var expected1 interface{} = nil
 		var expected2 bool = false
@@ -194,10 +194,10 @@ func TestSection_Del(t *testing.T) {
 	}(&section)
 }
 
-func TestSection_Del_Nonexist(t *testing.T) {
-	var section Section = _fixtureSection1.Section
+func TestOrderedSection_Del_Nonexist(t *testing.T) {
+	var section OrderedSection = _fixtureSection1.OrderedSection
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual, expected := section.Del("foo"), false
 
 		if actual != expected {
@@ -205,7 +205,7 @@ func TestSection_Del_Nonexist(t *testing.T) {
 		}
 	}(&section)
 
-	func(section *Section) {
+	func(section *OrderedSection) {
 		actual1, actual2 := section.Get("foo")
 		var expected1 interface{} = nil
 		var expected2 bool = false

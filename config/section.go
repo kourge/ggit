@@ -9,31 +9,32 @@ import (
 	"github.com/kourge/goit/core"
 )
 
-// A Section represents a section in a Git config file. It has its own name and
-// a list of key-value pairs under it.
-type Section struct {
+// A OrderedSection represents a section in a Git config file. It has its own
+// name and a list of key-value pairs under it.
+type OrderedSection struct {
 	name    string
 	entries []Entry
 }
 
-var _ core.Encoder = Section{}
+var _ core.Encoder = OrderedSection{}
 
-// NewSection returns a Section named name that contains the items in entries.
-func NewSection(name string, entries ...Entry) Section {
-	return Section{name: name, entries: entries}
+// NewOrderedSection returns a OrderedSection named name that contains the items
+// in entries.
+func NewOrderedSection(name string, entries ...Entry) OrderedSection {
+	return OrderedSection{name: name, entries: entries}
 }
 
 // Name returns the name of this section.
-func (section Section) Name() string {
+func (section OrderedSection) Name() string {
 	return section.name
 }
 
 // SetName sets the name of this section.
-func (section *Section) SetName(name string) {
+func (section *OrderedSection) SetName(name string) {
 	section.name = name
 }
 
-func (section Section) bytesBuffer() *bytes.Buffer {
+func (section OrderedSection) bytesBuffer() *bytes.Buffer {
 	buffer := new(bytes.Buffer)
 
 	buffer.WriteRune('[')
@@ -54,11 +55,11 @@ func (section Section) bytesBuffer() *bytes.Buffer {
 // first line. Subsequent lines are the underlying Entry structs serialized in
 // order, each indented by a single horizontal tab rune '\t' and each separated
 // by a new line rune '\n'.
-func (section Section) Reader() io.Reader {
+func (section OrderedSection) Reader() io.Reader {
 	return section.bytesBuffer()
 }
 
-func (section Section) lazyReader() io.Reader {
+func (section OrderedSection) lazyReader() io.Reader {
 	offset := 3
 	readers := make([]io.Reader, len(section.entries)*3+offset)
 	readers[0] = bytes.NewReader([]byte{'['})
@@ -76,11 +77,11 @@ func (section Section) lazyReader() io.Reader {
 
 // String returns a string that is the result of draining the io.Reader returned
 // by Reader().
-func (section Section) String() string {
+func (section OrderedSection) String() string {
 	return section.bytesBuffer().String()
 }
 
-// Decode parses bytes into a Section. This stream of bytes is assumed to
+// Decode parses bytes into a OrderedSection. This stream of bytes is assumed to
 // contain only a single section. If multiple sections appear, all entries will
 // be treated as if they were in a single section, and the last seen section's
 // name is considered to be this single section's name.
@@ -88,7 +89,7 @@ func (section Section) String() string {
 // Lines that start with the pound sign rune '#' or the semicolon rune ';' will
 // be treated as comment and ignored. Completely whitespace lines or blank lines
 // will also be ignored.
-func (section *Section) Decode(reader io.Reader) error {
+func (section *OrderedSection) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 	entries := make([]Entry, 0)
 
@@ -122,15 +123,15 @@ func (section *Section) Decode(reader io.Reader) error {
 	return nil
 }
 
-// WalkSectionFunc is the type of the function called for each key-value pair
-// iterated by Walk. Its return value is inspected to determine whether the
-// iteration is short-circuited; when a WalkSectionFunc returns false, Walk
-// breaks out of the iteration loop.
-type WalkSectionFunc func(key string, value interface{}) (stop bool)
+// WalkOrderedSectionFunc is the type of the function called for each key-value
+// pair iterated by Walk. Its return value is inspected to determine whether the
+// iteration is short-circuited; when a WalkOrderedSectionFunc returns false,
+// Walk breaks out of the iteration loop.
+type WalkOrderedSectionFunc func(key string, value interface{}) (stop bool)
 
 // Walk iterates though the entries contained in this section, calling walkFn
 // for each key-value pair.
-func (section Section) Walk(walkFn WalkSectionFunc) {
+func (section OrderedSection) Walk(walkFn WalkOrderedSectionFunc) {
 	for _, entry := range section.entries {
 		stop := walkFn(entry.Key, entry.Value)
 		if stop {
@@ -140,14 +141,14 @@ func (section Section) Walk(walkFn WalkSectionFunc) {
 }
 
 // Len returns the number of key-value pairs in this section.
-func (section Section) Len() int {
+func (section OrderedSection) Len() int {
 	return len(section.entries)
 }
 
 // Get returns a pair in the form of (value, exists) given a key. If there
 // exists a value for the given key, exists will be true. Otherwise, it will be
 // false and value will be nil.
-func (section Section) Get(key string) (value interface{}, exists bool) {
+func (section OrderedSection) Get(key string) (value interface{}, exists bool) {
 	for _, entry := range section.entries {
 		if entry.Key == key {
 			return entry.Value, true
@@ -158,9 +159,9 @@ func (section Section) Get(key string) (value interface{}, exists bool) {
 }
 
 // Set either adds a key-value pair or, if the key already exists, associates
-// the given key to the provided value instead. If the former case is true,
-// Set returns true. Otherwise, it returns false.
-func (section *Section) Set(key string, value interface{}) (added bool) {
+// the given key to the provided value instead. If the former case is true, Set
+// returns true. Otherwise, it returns false.
+func (section *OrderedSection) Set(key string, value interface{}) (added bool) {
 	for i, entry := range section.entries {
 		if entry.Key == key {
 			section.entries[i].Value = value
@@ -175,7 +176,7 @@ func (section *Section) Set(key string, value interface{}) (added bool) {
 // Del removes the key-value pair for a given key or does nothing if no
 // key-value pair exists for the given key. If the former case is true, Del
 // returns true. Otherwise, it returns false.
-func (section *Section) Del(key string) (deleted bool) {
+func (section *OrderedSection) Del(key string) (deleted bool) {
 	index := -1
 	for i, entry := range section.entries {
 		if entry.Key == key {

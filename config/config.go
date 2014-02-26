@@ -15,7 +15,7 @@ import (
 // sections, each of them with their own list of key-value pairs. Includes are
 // not supported at the moment.
 type Config struct {
-	Sections []Section
+	Sections []OrderedSection
 }
 
 var _ core.EncodeDecoder = &Config{}
@@ -52,7 +52,7 @@ func (config *Config) Decode(reader io.Reader) error {
 	lines := new(bytes.Buffer)
 
 	flush := func(realloc bool) error {
-		section := &Section{}
+		section := &OrderedSection{}
 		if err := section.Decode(lines); err != nil {
 			return err
 		}

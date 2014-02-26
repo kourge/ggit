@@ -16,17 +16,17 @@ type configFixture struct {
 
 var (
 	_fixtureConfig configFixture = configFixture{
-		Config: Config{[]Section{
-			{"user", []Entry{
+		Config: Config{[]OrderedSection{
+			NewOrderedSection("user", []Entry{
 				{"name", "Jane Doe"},
 				{"email", "jane@example.com"},
-			}},
-			{"core", []Entry{
+			}...),
+			NewOrderedSection("core", []Entry{
 				{"repositoryformatversion", int64(0)},
 				{"filemode", true},
 				{"diff", "auto"},
 				{"bare", false},
-			}},
+			}...),
 		}},
 		String: `
 [user]
@@ -75,15 +75,15 @@ func TestConfig_Decode(t *testing.T) {
 
 func ExampleConfig_Reader() {
 	defaultConfig := Config{
-		[]Section{
-			{"core", []Entry{
+		[]OrderedSection{
+			NewOrderedSection("core", []Entry{
 				{"repositoryformatversion", int64(0)},
 				{"filemode", true},
 				{"bare", false},
 				{"logallrefupdates", true},
 				{"ignorecase", true},
 				{"precomposeunicode", false},
-			}},
+			}...),
 		},
 	}
 
