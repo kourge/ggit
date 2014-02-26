@@ -12,26 +12,26 @@ import (
 	"github.com/kourge/goit/core"
 )
 
-// A ConfigEntry represents a key-value pair in a Git config file. The key is an
+// A Entry represents a key-value pair in a Git config file. The key is an
 // alphanumeric string, and the value is a decimal integer, a boolean value, or
 // a string.
-type ConfigEntry struct {
+type Entry struct {
 	Key   string
 	Value interface{}
 }
 
-var _ core.EncodeDecoder = &ConfigEntry{}
+var _ core.EncodeDecoder = &Entry{}
 
 // Reader returns an io.Reader that wraps around the string returned by String().
-func (entry ConfigEntry) Reader() io.Reader {
+func (entry Entry) Reader() io.Reader {
 	return strings.NewReader(entry.String())
 }
 
-// String returns the ConfigEntry converted to the string form of
-// "<Key> = <Value>". If Value is an int or a boolean, their literal forms are
-// used. If Value is a string, it is quoted with double quotes unless it
-// contains no whitespace, as determined by unicode.IsSpace.
-func (entry ConfigEntry) String() string {
+// String returns the Entry converted to the string form of "<Key> = <Value>".
+// If Value is an int or a boolean, their literal forms are used. If Value is
+// a string, it is quoted with double quotes unless it contains no whitespace,
+// as determined by unicode.IsSpace.
+func (entry Entry) String() string {
 	if value, ok := entry.Value.(string); ok {
 		if strings.IndexFunc(value, unicode.IsSpace) != -1 {
 			return fmt.Sprintf("%s = %s", entry.Key, strconv.Quote(value))
@@ -40,10 +40,10 @@ func (entry ConfigEntry) String() string {
 	return fmt.Sprintf("%s = %v", entry.Key, entry.Value)
 }
 
-// Decode parses a single line into a ConfigEntry, assuming the form
-// "<Key> = <Value>". The Key should be alphanumeric, but must not contain the
-// rune '='. The Value may have extra whitespace before, after, or both, as they
-// are stripped in the decoding process.
+// Decode parses a single line into a Entry, assuming the form "<Key>
+// = <Value>". The Key should be alphanumeric, but must not contain the rune
+// '='. The Value may have extra whitespace before, after, or both, as they are
+// stripped in the decoding process.
 //
 // If the value starts with the double-quote rune '"', then it is assumed to
 // begin and end with that rune; it is then treated as a quoted string with
@@ -57,7 +57,7 @@ func (entry ConfigEntry) String() string {
 // If the value is the literal "true" or "false", it is considered a boolean.
 //
 // In all other cases, the Value is treated as a string.
-func (entry *ConfigEntry) Decode(reader io.Reader) error {
+func (entry *Entry) Decode(reader io.Reader) error {
 	var key string
 	var value interface{}
 	r := bufio.NewReader(reader)

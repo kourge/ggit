@@ -13,7 +13,7 @@ import (
 // name and a list of key-value pairs under it.
 type ConfigSection struct {
 	Name    string
-	Entries []ConfigEntry
+	Entries []Entry
 }
 
 var _ core.Encoder = ConfigSection{}
@@ -36,9 +36,9 @@ func (section ConfigSection) bytesBuffer() *bytes.Buffer {
 }
 
 // Returns an io.Reader that yields the section name in square brackets as the
-// first line. Subsequent lines are the underlying ConfigEntry structs
-// serialized in order, each indented by a single horizontal tab rune '\t' and
-// each separated by a new line rune '\n'.
+// first line. Subsequent lines are the underlying Entry structs serialized in
+// order, each indented by a single horizontal tab rune '\t' and each separated
+// by a new line rune '\n'.
 func (section ConfigSection) Reader() io.Reader {
 	return section.bytesBuffer()
 }
@@ -59,23 +59,23 @@ func (section ConfigSection) lazyReader() io.Reader {
 	return io.MultiReader(readers...)
 }
 
-// String returns a string that is the result of draining the io.Reader
-// returned by Reader().
+// String returns a string that is the result of draining the io.Reader returned
+// by Reader().
 func (section ConfigSection) String() string {
 	return section.bytesBuffer().String()
 }
 
-// Decode parses bytes into a ConfigSection. This stream of bytes is assumed
-// to contain only a single section. If multiple sections appear, all entries
-// will be treated as if they were in a single section, and the last seen
-// section's name is considered to be this single section's name.
+// Decode parses bytes into a ConfigSection. This stream of bytes is assumed to
+// contain only a single section. If multiple sections appear, all entries will
+// be treated as if they were in a single section, and the last seen section's
+// name is considered to be this single section's name.
 //
 // Lines that start with the pound sign rune '#' or the semicolon rune ';' will
 // be treated as comment and ignored. Completely whitespace lines or blank lines
 // will also be ignored.
 func (section *ConfigSection) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
-	entries := make([]ConfigEntry, 0)
+	entries := make([]Entry, 0)
 
 	reachedEof := false
 	for !reachedEof {
@@ -98,7 +98,7 @@ func (section *ConfigSection) Decode(reader io.Reader) error {
 			continue
 		}
 
-		entry := &ConfigEntry{}
+		entry := &Entry{}
 		entry.Decode(strings.NewReader(line))
 		entries = append(entries, *entry)
 	}

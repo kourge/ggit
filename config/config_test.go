@@ -9,7 +9,7 @@ import (
 )
 
 type configEntryFixture struct {
-	ConfigEntry
+	Entry
 	String           string
 	NormalizedString string
 }
@@ -28,20 +28,20 @@ type configFixture struct {
 
 var (
 	_fixtureEntry1 configEntryFixture = configEntryFixture{
-		ConfigEntry{"diff", "auto"}, "diff =  auto", "diff = auto",
+		Entry{"diff", "auto"}, "diff =  auto", "diff = auto",
 	}
 	_fixtureEntry2 configEntryFixture = configEntryFixture{
-		ConfigEntry{"name", "John Doe"}, "name = John Doe", "name = \"John Doe\"",
+		Entry{"name", "John Doe"}, "name = John Doe", "name = \"John Doe\"",
 	}
 	_fixtureEntry3 configEntryFixture = configEntryFixture{
-		ConfigEntry{"ignorecase", true}, " ignorecase=true", "ignorecase = true",
+		Entry{"ignorecase", true}, " ignorecase=true", "ignorecase = true",
 	}
 	_fixtureEntry4 configEntryFixture = configEntryFixture{
-		ConfigEntry{"repositoryformatversion", int64(0)}, "repositoryformatversion  = 0", "repositoryformatversion = 0",
+		Entry{"repositoryformatversion", int64(0)}, "repositoryformatversion  = 0", "repositoryformatversion = 0",
 	}
 
 	_fixtureSection1 configSectionFixture = configSectionFixture{
-		ConfigSection: ConfigSection{"core", []ConfigEntry{
+		ConfigSection: ConfigSection{"core", []Entry{
 			{"repositoryformatversion", int64(0)},
 			{"filemode", true},
 			{"diff", "auto"},
@@ -68,11 +68,11 @@ var (
 
 	_fixtureConfig configFixture = configFixture{
 		Config: Config{[]ConfigSection{
-			{"user", []ConfigEntry{
+			{"user", []Entry{
 				{"name", "Jane Doe"},
 				{"email", "jane@example.com"},
 			}},
-			{"core", []ConfigEntry{
+			{"core", []Entry{
 				{"repositoryformatversion", int64(0)},
 				{"filemode", true},
 				{"diff", "auto"},
@@ -104,11 +104,11 @@ diff=auto
 	}
 )
 
-func TestConfigEntry_String(t *testing.T) {
+func TestEntry_String(t *testing.T) {
 	for _, fixture := range []configEntryFixture{
 		_fixtureEntry1, _fixtureEntry2, _fixtureEntry3, _fixtureEntry4,
 	} {
-		var actual string = fixture.ConfigEntry.String()
+		var actual string = fixture.Entry.String()
 		var expected string = fixture.NormalizedString
 
 		if actual != expected {
@@ -117,12 +117,12 @@ func TestConfigEntry_String(t *testing.T) {
 	}
 }
 
-func TestConfigEntry_Decode(t *testing.T) {
+func TestEntry_Decode(t *testing.T) {
 	for _, fixture := range []configEntryFixture{
 		_fixtureEntry1, _fixtureEntry2, _fixtureEntry3, _fixtureEntry4,
 	} {
-		var actual *ConfigEntry = &ConfigEntry{}
-		var expected *ConfigEntry = &fixture.ConfigEntry
+		var actual *Entry = &Entry{}
+		var expected *Entry = &fixture.Entry
 
 		actual.Decode(strings.NewReader(fixture.String))
 
@@ -175,7 +175,7 @@ func TestConfig_Decode(t *testing.T) {
 func ExampleConfig_Reader() {
 	defaultConfig := Config{
 		[]ConfigSection{
-			{"core", []ConfigEntry{
+			{"core", []Entry{
 				{"repositoryformatversion", int64(0)},
 				{"filemode", true},
 				{"bare", false},
