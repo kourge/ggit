@@ -64,12 +64,12 @@ func TestSection_Walk_Iterate(t *testing.T) {
 	section := &_fixtureSection1.Section
 	i := 0
 	section.Walk(func(k string, v interface{}) (stop bool) {
-		actualK, expectedK := k, section.Entries[i].Key
+		actualK, expectedK := k, section.entries[i].Key
 		if actualK != expectedK {
 			t.Errorf("section.Walk() gave k = %v for index %d, want %v", actualK, i, expectedK)
 		}
 
-		actualV, expectedV := v, section.Entries[i].Value
+		actualV, expectedV := v, section.entries[i].Value
 		if actualV != expectedV {
 			t.Errorf("section.Walk() gave v = %v for index %d, want %v", actualV, i, expectedV)
 		}

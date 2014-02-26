@@ -12,21 +12,36 @@ import (
 // A Section represents a section in a Git config file. It has its own name and
 // a list of key-value pairs under it.
 type Section struct {
-	Name    string
-	Entries []Entry
+	name    string
+	entries []Entry
 }
 
 var _ core.Encoder = Section{}
+
+// NewSection returns a Section named name that contains the items in entries.
+func NewSection(name string, entries ...Entry) Section {
+	return Section{name: name, entries: entries}
+}
+
+// Name returns the name of this section.
+func (section Section) Name() string {
+	return section.name
+}
+
+// SetName sets the name of this section.
+func (section *Section) SetName(name string) {
+	section.name = name
+}
 
 func (section Section) bytesBuffer() *bytes.Buffer {
 	buffer := new(bytes.Buffer)
 
 	buffer.WriteRune('[')
-	buffer.WriteString(section.Name)
+	buffer.WriteString(section.name)
 	buffer.WriteRune(']')
 	buffer.WriteRune('\n')
 
-	for _, entry := range section.Entries {
+	for _, entry := range section.entries {
 		buffer.WriteRune('\t')
 		buffer.WriteString(entry.String())
 		buffer.WriteRune('\n')
@@ -45,12 +60,12 @@ func (section Section) Reader() io.Reader {
 
 func (section Section) lazyReader() io.Reader {
 	offset := 3
-	readers := make([]io.Reader, len(section.Entries)*3+offset)
+	readers := make([]io.Reader, len(section.entries)*3+offset)
 	readers[0] = bytes.NewReader([]byte{'['})
-	readers[1] = strings.NewReader(section.Name)
+	readers[1] = strings.NewReader(section.name)
 	readers[2] = bytes.NewReader([]byte{']', '\n'})
 
-	for i, entry := range section.Entries {
+	for i, entry := range section.entries {
 		readers[i*3+offset+0] = bytes.NewReader([]byte{'\t'})
 		readers[i*3+offset+1] = entry.Reader()
 		readers[i*3+offset+2] = bytes.NewReader([]byte{'\n'})
@@ -94,7 +109,7 @@ func (section *Section) Decode(reader io.Reader) error {
 
 		if line[0] == '[' {
 			i := strings.IndexByte(line, ']')
-			section.Name = strings.TrimSpace(line[1:i])
+			section.name = strings.TrimSpace(line[1:i])
 			continue
 		}
 
@@ -103,7 +118,7 @@ func (section *Section) Decode(reader io.Reader) error {
 		entries = append(entries, *entry)
 	}
 
-	section.Entries = entries
+	section.entries = entries
 	return nil
 }
 
@@ -116,7 +131,7 @@ type WalkSectionFunc func(key string, value interface{}) (stop bool)
 // Walk iterates though the entries contained in this section, calling walkFn
 // for each key-value pair.
 func (section Section) Walk(walkFn WalkSectionFunc) {
-	for _, entry := range section.Entries {
+	for _, entry := range section.entries {
 		stop := walkFn(entry.Key, entry.Value)
 		if stop {
 			break
@@ -126,14 +141,14 @@ func (section Section) Walk(walkFn WalkSectionFunc) {
 
 // Len returns the number of key-value pairs in this section.
 func (section Section) Len() int {
-	return len(section.Entries)
+	return len(section.entries)
 }
 
 // Get returns a pair in the form of (value, exists) given a key. If there
 // exists a value for the given key, exists will be true. Otherwise, it will be
 // false and value will be nil.
 func (section Section) Get(key string) (value interface{}, exists bool) {
-	for _, entry := range section.Entries {
+	for _, entry := range section.entries {
 		if entry.Key == key {
 			return entry.Value, true
 		}
@@ -146,14 +161,14 @@ func (section Section) Get(key string) (value interface{}, exists bool) {
 // the given key to the provided value instead. If the former case is true,
 // Set returns true. Otherwise, it returns false.
 func (section *Section) Set(key string, value interface{}) (added bool) {
-	for i, entry := range section.Entries {
+	for i, entry := range section.entries {
 		if entry.Key == key {
-			section.Entries[i].Value = value
+			section.entries[i].Value = value
 			return false
 		}
 	}
 
-	section.Entries = append(section.Entries, Entry{key, value})
+	section.entries = append(section.entries, Entry{key, value})
 	return true
 }
 
@@ -162,7 +177,7 @@ func (section *Section) Set(key string, value interface{}) (added bool) {
 // returns true. Otherwise, it returns false.
 func (section *Section) Del(key string) (deleted bool) {
 	index := -1
-	for i, entry := range section.Entries {
+	for i, entry := range section.entries {
 		if entry.Key == key {
 			index = i
 			break
@@ -171,12 +186,12 @@ func (section *Section) Del(key string) (deleted bool) {
 
 	deleted = index != -1
 	if deleted {
-		for i, length := index, len(section.Entries); i < length; i++ {
+		for i, length := index, len(section.entries); i < length; i++ {
 			if i != length - 1 {
-				section.Entries[i] = section.Entries[i + 1]
+				section.entries[i] = section.entries[i + 1]
 			}
 		}
-		section.Entries = section.Entries[:len(section.Entries)-1]
+		section.entries = section.entries[:len(section.entries)-1]
 	}
 
 	return
