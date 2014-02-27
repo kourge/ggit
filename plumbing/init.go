@@ -10,6 +10,7 @@ import (
 
 const (
 	defaultPerm os.FileMode = 0755
+	defaultDesc string      = `Unnamed repository; edit this file 'description' to name the repository.`
 )
 
 var (
@@ -86,7 +87,10 @@ func InitRepo(o InitOptions) error {
 			_, err := io.Copy(f, defaultConfig.Reader())
 			return err
 		}},
-		{"description", fileNop},
+		{"description", func(f *os.File) error {
+			_, err := f.Write([]byte(defaultDesc))
+			return err
+		}},
 		{"info/exclude", fileNop},
 	} {
 		if file, err := os.Create(item.Name); err != nil {
