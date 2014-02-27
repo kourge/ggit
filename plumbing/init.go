@@ -22,16 +22,14 @@ var (
 	}
 
 	defaultConfig config.Config = config.Config{
-		Sections: []config.Section{
-			config.Section{"core", []config.Entry{
-				{"repositoryformatversion", 0},
-				{"filemode", true},
-				{"bare", false},
-				{"logallrefupdates", true},
-				{"ignorecase", true},
-				{"precomposeunicode", false},
-			}},
-		},
+		"core": {"core", config.Dict{
+			"repositoryformatversion": 0,
+			"filemode": true,
+			"bare": false,
+			"logallrefupdates": true,
+			"ignorecase": true,
+			"precomposeunicode": false,
+		}},
 	}
 )
 

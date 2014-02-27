@@ -5,55 +5,35 @@ import (
 	"bytes"
 	"io"
 	"strings"
-
-	"github.com/kourge/goit/core"
 )
+
+// A Dict represents a map with string keys and arbitrary-typed values.
+type Dict map[string]interface{}
 
 // A Section represents a section in a Git config file. It has its own name and
 // a list of key-value pairs under it.
 type Section struct {
-	Name    string
-	Entries []Entry
-}
-
-var _ core.Encoder = Section{}
-
-func (section Section) bytesBuffer() *bytes.Buffer {
-	buffer := new(bytes.Buffer)
-
-	buffer.WriteRune('[')
-	buffer.WriteString(section.Name)
-	buffer.WriteRune(']')
-	buffer.WriteRune('\n')
-
-	for _, entry := range section.Entries {
-		buffer.WriteRune('\t')
-		buffer.WriteString(entry.String())
-		buffer.WriteRune('\n')
-	}
-
-	return buffer
+	Name string
+	Dict
 }
 
 // Returns an io.Reader that yields the section name in square brackets as the
 // first line. Subsequent lines are the underlying Entry structs serialized in
 // order, each indented by a single horizontal tab rune '\t' and each separated
 // by a new line rune '\n'.
-func (section Section) Reader() io.Reader {
-	return section.bytesBuffer()
-}
-
-func (section Section) lazyReader() io.Reader {
+func (section *Section) Reader() io.Reader {
 	offset := 3
-	readers := make([]io.Reader, len(section.Entries)*3+offset)
+	readers := make([]io.Reader, len(section.Dict)*3 + offset)
 	readers[0] = bytes.NewReader([]byte{'['})
 	readers[1] = strings.NewReader(section.Name)
 	readers[2] = bytes.NewReader([]byte{']', '\n'})
 
-	for i, entry := range section.Entries {
-		readers[i*3+offset+0] = bytes.NewReader([]byte{'\t'})
-		readers[i*3+offset+1] = entry.Reader()
-		readers[i*3+offset+2] = bytes.NewReader([]byte{'\n'})
+	i := 0
+	for k, v := range section.Dict {
+		readers[i*3 + offset + 0] = bytes.NewReader([]byte{'\t'})
+		readers[i*3 + offset + 1] = (&Entry{k, v}).Reader()
+		readers[i*3 + offset + 2] = bytes.NewReader([]byte{'\n'})
+		i += 1
 	}
 
 	return io.MultiReader(readers...)
@@ -61,8 +41,10 @@ func (section Section) lazyReader() io.Reader {
 
 // String returns a string that is the result of draining the io.Reader returned
 // by Reader().
-func (section Section) String() string {
-	return section.bytesBuffer().String()
+func (section *Section) String() string {
+	var buffer = new(bytes.Buffer)
+	buffer.ReadFrom(section.Reader())
+	return buffer.String()
 }
 
 // Decode parses bytes into a Section. This stream of bytes is assumed to
@@ -75,7 +57,8 @@ func (section Section) String() string {
 // will also be ignored.
 func (section *Section) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
-	entries := make([]Entry, 0)
+	section.Dict = make(Dict)
+	entry := &Entry{}
 
 	reachedEof := false
 	for !reachedEof {
@@ -98,11 +81,10 @@ func (section *Section) Decode(reader io.Reader) error {
 			continue
 		}
 
-		entry := &Entry{}
 		entry.Decode(strings.NewReader(line))
-		entries = append(entries, *entry)
+		section.Dict[entry.Key] = entry.Value
 	}
 
-	section.Entries = entries
 	return nil
 }
+

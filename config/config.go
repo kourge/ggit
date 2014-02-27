@@ -14,20 +14,20 @@ import (
 // A Config represents a INI-style Git config file, composed of multiple
 // sections, each of them with their own list of key-value pairs. Includes are
 // not supported at the moment.
-type Config struct {
-	Sections []Section
-}
+type Config map[string]Section
 
 var _ core.EncodeDecoder = &Config{}
 
 // Reader returns an io.Reader that, when read, prints out each section,
 // each separated by a blank line.
 func (config Config) Reader() io.Reader {
-	readers := make([]io.Reader, len(config.Sections)*2)
+	readers := make([]io.Reader, len(config)*2)
 
-	for i, section := range config.Sections {
+	i := 0
+	for _, section := range config {
 		readers[i*2] = section.Reader()
 		readers[i*2+1] = bytes.NewReader([]byte{'\n'})
+		i += 1
 	}
 
 	return io.MultiReader(readers[:len(readers)-1]...)
@@ -47,7 +47,7 @@ func (config Config) String() string {
 // Lines that start with the pound sign rune '#' or the semicolon rune ';' will
 // be treated as comment and ignored. Completely whitespace lines or blank lines
 // will also be ignored.
-func (config *Config) Decode(reader io.Reader) error {
+func (config Config) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 	lines := new(bytes.Buffer)
 
@@ -56,7 +56,7 @@ func (config *Config) Decode(reader io.Reader) error {
 		if err := section.Decode(lines); err != nil {
 			return err
 		}
-		config.Sections = append(config.Sections, *section)
+		config[section.Name] = *section
 
 		if realloc {
 			lines = new(bytes.Buffer)

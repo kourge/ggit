@@ -14,12 +14,12 @@ type sectionFixture struct {
 
 var (
 	_fixtureSection1 sectionFixture = sectionFixture{
-		Section: Section{"core", []Entry{
-			{"repositoryformatversion", int64(0)},
-			{"filemode", true},
-			{"diff", "auto"},
-			{"bare", false},
-			{"name", "John Doe"},
+		Section: Section{"core", Dict{
+			"repositoryformatversion": int64(0),
+			"filemode": true,
+			"diff": "auto",
+			"bare": false,
+			"name": "John Doe",
 		}},
 		String: `[core]
 	repositoryformatversion = 0

@@ -16,18 +16,18 @@ type configFixture struct {
 
 var (
 	_fixtureConfig configFixture = configFixture{
-		Config: Config{[]Section{
-			{"user", []Entry{
-				{"name", "Jane Doe"},
-				{"email", "jane@example.com"},
+		Config: Config{
+			"user": {"user", Dict{
+				"name": "Jane Doe",
+				"email": "jane@example.com",
 			}},
-			{"core", []Entry{
-				{"repositoryformatversion", int64(0)},
-				{"filemode", true},
-				{"diff", "auto"},
-				{"bare", false},
+			"core": {"core", Dict{
+				"repositoryformatversion": int64(0),
+				"filemode": true,
+				"diff": "auto",
+				"bare": false,
 			}},
-		}},
+		},
 		String: `
 [user]
 	name =   Jane Doe
@@ -75,16 +75,14 @@ func TestConfig_Decode(t *testing.T) {
 
 func ExampleConfig_Reader() {
 	defaultConfig := Config{
-		[]Section{
-			{"core", []Entry{
-				{"repositoryformatversion", int64(0)},
-				{"filemode", true},
-				{"bare", false},
-				{"logallrefupdates", true},
-				{"ignorecase", true},
-				{"precomposeunicode", false},
-			}},
-		},
+		"core": {"core", Dict{
+			"repositoryformatversion": int64(0),
+			"filemode": true,
+			"bare": false,
+			"logallrefupdates": true,
+			"ignorecase": true,
+			"precomposeunicode": false,
+		}},
 	}
 
 	io.Copy(os.Stdout, defaultConfig.Reader())
