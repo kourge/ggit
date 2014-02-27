@@ -16,7 +16,7 @@ import (
 // not supported at the moment.
 type Config map[string]Section
 
-var _ core.EncodeDecoder = &Config{}
+var _ core.EncodeDecoder = Config{}
 
 // Reader returns an io.Reader that, when read, prints out each section,
 // each separated by a blank line.
