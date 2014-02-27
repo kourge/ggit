@@ -18,14 +18,14 @@ var (
 	_fixtureConfig configFixture = configFixture{
 		Config: Config{
 			"user": {"user", Dict{
-				"name": "Jane Doe",
+				"name":  "Jane Doe",
 				"email": "jane@example.com",
 			}},
 			"core": {"core", Dict{
 				"repositoryformatversion": int64(0),
-				"filemode": true,
-				"diff": "auto",
-				"bare": false,
+				"filemode":                true,
+				"diff":                    "auto",
+				"bare":                    false,
 			}},
 		},
 		String: `
@@ -77,11 +77,11 @@ func ExampleConfig_Reader() {
 	defaultConfig := Config{
 		"core": {"core", Dict{
 			"repositoryformatversion": int64(0),
-			"filemode": true,
-			"bare": false,
-			"logallrefupdates": true,
-			"ignorecase": true,
-			"precomposeunicode": false,
+			"filemode":                true,
+			"bare":                    false,
+			"logallrefupdates":        true,
+			"ignorecase":              true,
+			"precomposeunicode":       false,
 		}},
 	}
 

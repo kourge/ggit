@@ -23,16 +23,16 @@ type Section struct {
 // by a new line rune '\n'.
 func (section *Section) Reader() io.Reader {
 	offset := 3
-	readers := make([]io.Reader, len(section.Dict)*3 + offset)
+	readers := make([]io.Reader, len(section.Dict)*3+offset)
 	readers[0] = bytes.NewReader([]byte{'['})
 	readers[1] = strings.NewReader(section.Name)
 	readers[2] = bytes.NewReader([]byte{']', '\n'})
 
 	i := 0
 	for k, v := range section.Dict {
-		readers[i*3 + offset + 0] = bytes.NewReader([]byte{'\t'})
-		readers[i*3 + offset + 1] = (&Entry{k, v}).Reader()
-		readers[i*3 + offset + 2] = bytes.NewReader([]byte{'\n'})
+		readers[i*3+offset+0] = bytes.NewReader([]byte{'\t'})
+		readers[i*3+offset+1] = (&Entry{k, v}).Reader()
+		readers[i*3+offset+2] = bytes.NewReader([]byte{'\n'})
 		i += 1
 	}
 
@@ -87,4 +87,3 @@ func (section *Section) Decode(reader io.Reader) error {
 
 	return nil
 }
-
