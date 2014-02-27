@@ -32,17 +32,6 @@ var (
 	}
 )
 
-type fileFunc func(f *os.File) error
-
-var fileNop fileFunc = func(f *os.File) error {
-	return nil
-}
-
-type fileCreation struct {
-	Name string
-	Do   fileFunc
-}
-
 // InitOptions contains all the possible options for InitRepo.
 //
 // Dir is a string that is a path to the directory under which a repository
