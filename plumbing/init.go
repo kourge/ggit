@@ -26,8 +26,6 @@ var (
 		"core": {"core", config.Dict{
 			"repositoryformatversion": 0,
 			"filemode":                true,
-			"bare":                    false,
-			"logallrefupdates":        true,
 			"ignorecase":              true,
 			"precomposeunicode":       false,
 		}},
@@ -50,8 +48,12 @@ type fileCreation struct {
 // Dir is a string that is a path to the directory under which a repository
 // should be initialized. If left blank, it defaults to the current working
 // directory.
+//
+// Bare is a bool that indicates if this repository should be a bare repository,
+// which is a repo that has no working tree but acts as an object storage.
 type InitOptions struct {
-	Dir string
+	Dir  string
+	Bare bool
 }
 
 // InitRepo initializes a repo, given o as its options. Equivalent to
@@ -64,9 +66,16 @@ func InitRepo(o InitOptions) error {
 		}
 		o.Dir = dir
 	}
-	dir := path.Join(o.Dir, ".git")
+	dir := o.Dir
+	if o.Bare {
+		defaultConfig["core"].Dict["bare"] = true
+	} else {
+		dir = path.Join(o.Dir, ".git")
+		defaultConfig["core"].Dict["logallrefupdates"] = true
+		defaultConfig["core"].Dict["bare"] = false
+	}
 
-	if err := os.Mkdir(dir, defaultPerm); err != nil {
+	if err := os.MkdirAll(dir, defaultPerm); err != nil {
 		return err
 	} else if err := os.Chdir(dir); err != nil {
 		return err
