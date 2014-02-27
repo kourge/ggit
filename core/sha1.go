@@ -10,6 +10,12 @@ func (sha Sha1) IsValid() bool {
 	return len(sha) == 40 && allRunesMatch(string(sha), isAlphanumeric)
 }
 
+// Split returns two string values, obtained by splitting the checksum at index
+// n.
+func (sha Sha1) Split(n int) (string, string) {
+	return string(sha[:n]), string(sha[n:])
+}
+
 func isAlphanumeric(r rune) bool {
 	return r >= 'a' && r <= 'z' || r >= '0' && r <= '9'
 }
