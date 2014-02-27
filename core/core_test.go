@@ -20,5 +20,5 @@ func TestDie(t *testing.T) {
 			t.Error("Expected die() to panic")
 		}
 	}()
-	die(errors.New(_fixtureMessage))
+	Die(errors.New(_fixtureMessage))
 }

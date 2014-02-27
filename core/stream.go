@@ -42,7 +42,7 @@ func (stream *Stream) Reader() io.Reader {
 func (stream *Stream) Bytes() []byte {
 	buffer := new(bytes.Buffer)
 	if _, err := buffer.ReadFrom(stream.Reader()); err != nil {
-		die(err)
+		Die(err)
 	}
 	return buffer.Bytes()
 }
@@ -62,7 +62,7 @@ func (stream *Stream) Hash() Sha1 {
 func (stream *Stream) Rehash() (checksum Sha1) {
 	hash := sha1.New()
 	if _, err := io.Copy(hash, stream.Reader()); err != nil {
-		die(err)
+		Die(err)
 	}
 	checksum = Sha1(fmt.Sprintf("%x", hash.Sum(nil)))
 	stream.checksum = checksum

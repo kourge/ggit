@@ -110,12 +110,12 @@ func (tree *Tree) Reload() {
 	for i, entry := range tree.Entries {
 		if i != 0 {
 			if err := buffer.WriteByte('\n'); err != nil {
-				die(err)
+				Die(err)
 			}
 		}
 
 		if _, err := buffer.ReadFrom(entry.Reader()); err != nil {
-			die(err)
+			Die(err)
 		}
 	}
 	tree.buffer = buffer.Bytes()

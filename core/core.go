@@ -2,6 +2,6 @@
 // provides ways to encode and decode them to and from byte streams.
 package core
 
-func die(err error) {
+func Die(err error) {
 	panic("fatal: " + err.Error())
 }
