@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kourge/goit/core"
+	"github.com/kourge/ggit/core"
 )
 
 // HashObjectOptions contains all the possible options for HashObject.

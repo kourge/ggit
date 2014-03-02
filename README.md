@@ -1,4 +1,4 @@
-goit
+ggit
 ====
 
 A Git library written in Go. This is still in its early development stage, but

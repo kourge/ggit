@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kourge/goit/core"
+	"github.com/kourge/ggit/core"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kourge/goit/core"
+	"github.com/kourge/ggit/core"
 )
 
 // A Config represents a INI-style Git config file, composed of multiple

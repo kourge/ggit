@@ -6,7 +6,7 @@ install:
 	go install
 
 clean:
-	rm ./goit
+	rm ./ggit
 
 test:
 	go test ./core ./config

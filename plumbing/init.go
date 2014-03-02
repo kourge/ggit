@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/kourge/goit/config"
+	"github.com/kourge/ggit/config"
 )
 
 const (

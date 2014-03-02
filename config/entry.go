@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/kourge/goit/core"
+	"github.com/kourge/ggit/core"
 )
 
 // A Entry represents a key-value pair in a Git config file. The key is an
