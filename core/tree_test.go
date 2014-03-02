@@ -12,14 +12,14 @@ var (
 	_fixtureReadmeTreeEntry TreeEntry = TreeEntry{
 		Mode: GitModeRegular | GitModeReadWritable,
 		Type: "blob",
-		Sha:  "3618cb8c4131839885ac273d74ee2eb8a7dd6970",
+		Sha:  _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
 		Name: "README.md",
 	}
 	_fixtureReadmeTreeEntryString string    = "100644 blob 3618cb8c4131839885ac273d74ee2eb8a7dd6970\tREADME.md"
 	_fixtureLicenseTreeEntry      TreeEntry = TreeEntry{
 		Mode: GitModeRegular | GitModeReadWritable,
 		Type: "blob",
-		Sha:  "bf4b7bee80cf3f910fce252f73b189f1f3c2042a",
+		Sha:  _sha("bf4b7bee80cf3f910fce252f73b189f1f3c2042a"),
 		Name: "LICENSE",
 	}
 	_fixtureLicenseTreeEntryString string = "100644 blob bf4b7bee80cf3f910fce252f73b189f1f3c2042a\tLICENSE"

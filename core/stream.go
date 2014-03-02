@@ -50,7 +50,7 @@ func (stream *Stream) Bytes() []byte {
 // Hash returns the SHA-1 checksum of this stream's byte representation. This
 // checksum is only calculated once and then cached.
 func (stream *Stream) Hash() Sha1 {
-	if stream.checksum != "" {
+	if !stream.checksum.IsEmpty() {
 		return stream.checksum
 	}
 	return stream.Rehash()
@@ -64,7 +64,7 @@ func (stream *Stream) Rehash() (checksum Sha1) {
 	if _, err := io.Copy(hash, stream.Reader()); err != nil {
 		Die(err)
 	}
-	checksum = Sha1(fmt.Sprintf("%x", hash.Sum(nil)))
+	copy(checksum[:], hash.Sum(nil)[:])
 	stream.checksum = checksum
 	return
 }

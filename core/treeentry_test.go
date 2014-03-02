@@ -14,7 +14,10 @@ var (
 	_d_________ = GitModeDir | GitModeNullPerm
 
 	_fixtureTreeEntry TreeEntry = TreeEntry{
-		_frw_r__r__, "blob", "3618cb8c4131839885ac273d74ee2eb8a7dd6970", "README.md",
+		Mode: _frw_r__r__,
+		Type: "blob",
+		Sha:  _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
+		Name: "README.md",
 	}
 	_fixtureTreeEntryString string = "100644 blob 3618cb8c4131839885ac273d74ee2eb8a7dd6970\tREADME.md"
 
@@ -35,9 +38,12 @@ var (
 /Library/Formula/.gitignore
 `)}
 	_fixtureGitIgnoreTreeEntry TreeEntry = TreeEntry{
-		_frw_r__r__, "blob", "458a3c1f135f68e9650d344525cd12a46d7048f5", ".gitignore",
+		Mode: _frw_r__r__,
+		Type: "blob",
+		Sha:  _sha("458a3c1f135f68e9650d344525cd12a46d7048f5"),
+		Name: ".gitignore",
 	}
-	_fixtureGitIgnoreHash   Sha1   = "458a3c1f135f68e9650d344525cd12a46d7048f5"
+	_fixtureGitIgnoreHash   Sha1   = _sha("458a3c1f135f68e9650d344525cd12a46d7048f5")
 	_fixtureGitIgnoreString string = "100644 blob 458a3c1f135f68e9650d344525cd12a46d7048f5\t.gitignore"
 )
 
@@ -51,7 +57,7 @@ func TestTreeEntry_Reader(t *testing.T) {
 	actual = buffer.Bytes()
 
 	if !bytes.Equal(actual, expected) {
-		t.Error("treeEntry.Reader() did not generate same byte sequence")
+		t.Errorf("treeEntry.Reader() = %v, want %v", string(actual), string(expected))
 	}
 }
 
@@ -116,13 +122,22 @@ func TestTreeEntryFromObject_Unknown(t *testing.T) {
 
 func TestTreeEntrySlice_Sort(t *testing.T) {
 	_1 := TreeEntry{
-		_frw_r__r__, "blob", "3618cb8c4131839885ac273d74ee2eb8a7dd6970", "README.md",
+		Mode: _frw_r__r__,
+		Type: "blob",
+		Sha:  _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
+		Name: "README.md",
 	}
 	_2 := TreeEntry{
-		_frw_r__r__, "blob", "00268614f04567605359c96e714e834db9cebab6", ".gitignore",
+		Mode: _frw_r__r__,
+		Type: "blob",
+		Sha:  _sha("00268614f04567605359c96e714e834db9cebab6"),
+		Name: ".gitignore",
 	}
 	_3 := TreeEntry{
-		_frw_r__r__, "blob", "bf4b7bee80cf3f910fce252f73b189f1f3c2042a", "LICENSE",
+		Mode: _frw_r__r__,
+		Type: "blob",
+		Sha:  _sha("bf4b7bee80cf3f910fce252f73b189f1f3c2042a"),
+		Name: "LICENSE",
 	}
 	treeEntries := []TreeEntry{_1, _2, _3}
 

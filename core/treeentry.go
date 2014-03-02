@@ -30,7 +30,7 @@ func (entry TreeEntry) Reader() io.Reader {
 		bytes.NewReader([]byte{' '}),
 		strings.NewReader(entry.Type),
 		bytes.NewReader([]byte{' '}),
-		strings.NewReader(string(entry.Sha)),
+		strings.NewReader(entry.Sha.String()),
 		bytes.NewReader([]byte{'\t'}),
 		strings.NewReader(entry.Name),
 	)
@@ -71,11 +71,11 @@ func (entry *TreeEntry) Decode(reader io.Reader) error {
 		return err
 	} else {
 		shaString = shaString[:len(shaString)-1]
-		sha1 := Sha1(shaString)
-		if !sha1.IsValid() {
-			return errors.New(fmt.Sprintf("invalid tree item SHA-1 %v", shaString))
+		if sha, err := Sha1FromString(shaString); err != nil {
+			return err
+		} else {
+			entry.Sha = sha
 		}
-		entry.Sha = sha1
 	}
 
 	if filenameBytes, err := ioutil.ReadAll(r); err != nil {

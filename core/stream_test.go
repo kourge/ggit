@@ -12,16 +12,21 @@ type streamFixture struct {
 	Hash Sha1
 }
 
+func _sha(s string) Sha1 {
+	sha, _ := Sha1FromString(s)
+	return sha
+}
+
 var (
 	_fixture1 = streamFixture{
 		Object: &Blob{Content: []byte("what is up, doc?")},
 		Body:   "blob 16\x00what is up, doc?",
-		Hash:   Sha1("bd9dbf5aae1a3862dd1526723246b20206e5fc37"),
+		Hash:   _sha("bd9dbf5aae1a3862dd1526723246b20206e5fc37"),
 	}
 	_fixture2 = streamFixture{
 		Object: &Blob{Content: []byte("my hovercraft is full of eels")},
 		Body:   "blob 29\x00my hovercraft is full of eels",
-		Hash:   Sha1("7400f1589a11d1b912d6a90574d4f836087599b1"),
+		Hash:   _sha("7400f1589a11d1b912d6a90574d4f836087599b1"),
 	}
 	_fixture3 = streamFixture{
 		Object: &Tree{Entries: []TreeEntry{
@@ -29,7 +34,7 @@ var (
 			{_frw_r__r__, "blob", _fixture2.Hash, "blob2"},
 		}},
 		Body: "tree 117\x00100644 blob bd9dbf5aae1a3862dd1526723246b20206e5fc37\tblob1\n100644 blob 7400f1589a11d1b912d6a90574d4f836087599b1\tblob2",
-		Hash: Sha1("75242a2234bfad3ddc24e6c352a17cfbcef308b5"),
+		Hash: _sha("75242a2234bfad3ddc24e6c352a17cfbcef308b5"),
 	}
 
 	_fixture1Stream *Stream = &Stream{Object: _fixture1.Object}
