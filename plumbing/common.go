@@ -10,21 +10,10 @@ import (
 )
 
 const (
-	EmptySha                    core.Sha1   = 0
+	EmptySha                    core.Sha1   = ""
 	DefaultZlibCompressionLevel int         = 6
 	DefaultObjectFileMode       os.FileMode = 0444
 )
-
-type fileFunc func(f *os.File) error
-
-var fileNop fileFunc = func(f *os.File) error {
-	return nil
-}
-
-type fileCreation struct {
-	Name string
-	Do   fileFunc
-}
 
 // Errorf is a wrapper around errors.New(fmt.Sprintf(format, rest...)).
 func Errorf(format string, rest ...interface{}) error {
