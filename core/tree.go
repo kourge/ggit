@@ -3,6 +3,7 @@ package core
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"io"
 	"sort"
 )
@@ -32,58 +33,52 @@ func (tree *Tree) Size() int {
 }
 
 // Reader returns an io.Reader that yields each TreeEntry contained in this Tree
-// in serialized format, each separated by the new line rune '\n'. Before this
-// is done, the entries are sorted if needed. This bulk serialization is only
-// done once and then internally cached.
+// in serialized format. Before this is done, the entries are sorted if needed.
+// This bulk serialization is only done once and then internally cached.
 func (tree *Tree) Reader() io.Reader {
 	tree.loadIfNeeded()
 	return bytes.NewReader(tree.buffer)
 }
 
-// Decode reads from an io.Reader line by line and decodes each line as a
-// TreeEntry. If any line is improperly formatted, an error is returned. After
-// each line is properly decoded into a TreeEntry and stored, they are then
+// Decode reads from an io.Reader item by item and attempts to decode each as a
+// TreeEntry. If any item is improperly formatted, an error is returned. After
+// each item is properly decoded into a TreeEntry and stored, they are then
 // sorted to satisfy the invariant.
 func (tree *Tree) Decode(reader io.Reader) error {
-	var err error
-	buffer := new(bytes.Buffer)
 	entries := make([]TreeEntry, 0)
 	r := bufio.NewReader(reader)
 
-	reachedEof := false
-	for !reachedEof {
-		line, err := r.ReadBytes(byte('\n'))
+	for {
+		line, err := r.ReadBytes(byte(0))
 		if err == io.EOF {
-			reachedEof = true
-		} else if err != nil {
 			break
-		}
-
-		if _, err := buffer.Write(line); err != nil {
+		} else if err != nil {
 			return err
 		}
 
-		i := len(line)
-		if !reachedEof {
-			i -= 1
+		var checksum Sha1
+		n, err := r.Read(checksum[:])
+		if n != len(checksum) {
+			return errors.New("truncated checksum")
+		} else if err != nil {
+			return err
 		}
-		lineReader := bytes.NewBuffer(line[:i])
 
+		entryReader := io.MultiReader(
+			bytes.NewBuffer(line),
+			bytes.NewBuffer(checksum[:]),
+		)
 		treeEntry := &TreeEntry{}
-		if parseErr := treeEntry.Decode(lineReader); parseErr != nil {
+		if parseErr := treeEntry.Decode(entryReader); parseErr != nil {
 			return parseErr
 		}
 
 		entries = append(entries, *treeEntry)
 	}
 
-	if err != nil && err != io.EOF {
-		return err
-	}
-
 	tree.Entries = entries
-	tree.buffer = buffer.Bytes()
 	tree.sort()
+	tree.Reload()
 	return nil
 }
 
@@ -107,13 +102,7 @@ func (tree *Tree) Reload() {
 
 	buffer := new(bytes.Buffer)
 
-	for i, entry := range tree.Entries {
-		if i != 0 {
-			if err := buffer.WriteByte('\n'); err != nil {
-				Die(err)
-			}
-		}
-
+	for _, entry := range tree.Entries {
 		if _, err := buffer.ReadFrom(entry.Reader()); err != nil {
 			Die(err)
 		}

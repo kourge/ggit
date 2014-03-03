@@ -30,11 +30,11 @@ var (
 	}
 	_fixture3 = streamFixture{
 		Object: &Tree{Entries: []TreeEntry{
-			{_frw_r__r__, "blob", _fixture1.Hash, "blob1"},
-			{_frw_r__r__, "blob", _fixture2.Hash, "blob2"},
+			{_frw_r__r__, "blob1", _fixture1.Hash},
+			{_frw_r__r__, "blob2", _fixture2.Hash},
 		}},
-		Body: "tree 117\x00100644 blob bd9dbf5aae1a3862dd1526723246b20206e5fc37\tblob1\n100644 blob 7400f1589a11d1b912d6a90574d4f836087599b1\tblob2",
-		Hash: _sha("75242a2234bfad3ddc24e6c352a17cfbcef308b5"),
+		Body: "tree 66\x00100644 blob1\x00\xbd\x9d\xbf\x5a\xae\x1a\x38\x62\xdd\x15\x26\x72\x32\x46\xb2\x02\x06\xe5\xfc\x37100644 blob2\x00\x74\x00\xf1\x58\x9a\x11\xd1\xb9\x12\xd6\xa9\x05\x74\xd4\xf8\x36\x08\x75\x99\xb1",
+		Hash: _sha("dd08687e90cca5ce563867c40346781e3b115d36"),
 	}
 
 	_fixture1Stream *Stream = &Stream{Object: _fixture1.Object}
