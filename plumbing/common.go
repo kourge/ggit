@@ -29,6 +29,7 @@ func IsRepo(path string) bool {
 	if err != nil {
 		return false
 	}
+	defer dir.Close()
 
 	if filenames, err := dir.Readdirnames(0); os.IsNotExist(err) {
 		return false
