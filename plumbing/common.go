@@ -52,4 +52,3 @@ func IsRepo(path string) bool {
 
 	return true
 }
-

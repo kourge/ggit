@@ -14,4 +14,3 @@ type fileCreation struct {
 	Name string
 	Do   fileFunc
 }
-

@@ -17,8 +17,8 @@ type Author struct {
 
 var _ EncodeDecoder = &Author{}
 
-// Reader returns an io.Reader that formats the author into a UTF-8 string
-// in the human-readable form of "Name <Email>".
+// Reader returns an io.Reader that formats the author into a UTF-8 string in
+// the human-readable form of "Name <Email>".
 func (author Author) Reader() io.Reader {
 	return io.MultiReader(
 		strings.NewReader(author.Name),
@@ -33,9 +33,9 @@ func (author Author) String() string {
 	return fmt.Sprintf("%s <%s>", author.Name, author.Email)
 }
 
-// Decode parses a serialized Author assumed to be in the format of
-// "Name <Email>". The whitespace between the name and the email may be
-// arbitrarily long, but must not be absent.
+// Decode parses a serialized Author assumed to be in the format of "Name
+// <Email>". The whitespace between the name and the email may be arbitrarily
+// long, but must not be absent.
 func (author *Author) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 

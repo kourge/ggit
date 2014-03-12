@@ -20,9 +20,9 @@ type TreeEntry struct {
 var _ EncodeDecoder = &TreeEntry{}
 
 // Reader returns an io.Reader that yields a byte sequence in the format of
-// "<mode> <name>\0<sha>", where mode is a 6-digit octal number representing a
-// valid GitMode, name is a string that must not contain the NULL byte, and sha
-// is a 20-byte-long raw representation of a SHA-1 checksum.
+// "<mode> <name>\0<sha>", where mode is a 6-digit octal number representing
+// a valid GitMode, name is a string that must not contain the NULL byte, and
+// sha is a 20-byte-long raw representation of a SHA-1 checksum.
 func (entry TreeEntry) Reader() io.Reader {
 	return io.MultiReader(
 		entry.Mode.Reader(),
@@ -33,10 +33,10 @@ func (entry TreeEntry) Reader() io.Reader {
 	)
 }
 
-// Decode parses a serialized tree item assumed to be in the format of
-// "<mode> <name>\0<sha>". An error is returned if any of the following is true:
-// the mode is not a 6-digit octal in ASCII form, the mode is not a valid Git
-// mode, or the SHA-1 checksum is not exactly 20 bytes long.
+// Decode parses a serialized tree item assumed to be in the format of "<mode>
+// <name>\0<sha>". An error is returned if any of the following is true: the
+// mode is not a 6-digit octal in ASCII form, the mode is not a valid Git mode,
+// or the SHA-1 checksum is not exactly 20 bytes long.
 func (entry *TreeEntry) Decode(reader io.Reader) error {
 	r := bufio.NewReader(reader)
 
@@ -71,8 +71,8 @@ func (entry *TreeEntry) Decode(reader io.Reader) error {
 	return nil
 }
 
-// TreeEntryFromObject makes a new TreeEntry and attempts to populate it with a
-// supported object. Supported object types are tree and blob. Since the only
+// TreeEntryFromObject makes a new TreeEntry and attempts to populate it with
+// a supported object. Supported object types are tree and blob. Since the only
 // attribute that can be inferred from the given object is the SHA-1 checksum,
 // you must supply the intended mode and name for the resulting TreeEntry.
 func TreeEntryFromObject(object Object, mode GitMode, name string) (*TreeEntry, error) {
