@@ -32,6 +32,8 @@ const (
 	GitModeGroupWritable GitMode = 0664
 )
 
+// String returns this GitMode in form of a six-digit, left zero-padded octal
+// number.
 func (mode GitMode) String() string {
 	return fmt.Sprintf("%06o", mode)
 }

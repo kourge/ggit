@@ -28,6 +28,7 @@ func (author Author) Reader() io.Reader {
 	)
 }
 
+// String returns this Author in the format of "Name <Email>".
 func (author Author) String() string {
 	return fmt.Sprintf("%s <%s>", author.Name, author.Email)
 }

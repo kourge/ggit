@@ -15,7 +15,8 @@ func (sha Sha1) Reader() io.Reader {
 	return bytes.NewBuffer(sha[:])
 }
 
-// String returns this checksum in hexadecimal form.
+// String returns this checksum in form of a 40-digit, left zero-padded
+// hexadecimal number.
 func (sha Sha1) String() string {
 	return fmt.Sprintf("%040x", [20]byte(sha))
 }
