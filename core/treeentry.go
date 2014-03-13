@@ -83,7 +83,7 @@ func TreeEntryFromObject(object Object, mode GitMode, name string) (*TreeEntry, 
 		return nil, errors.New(message)
 	}
 
-	entry.Sha = (&Stream{Object: object}).Hash()
+	entry.Sha = NewStream(object).Hash()
 	return entry, nil
 }
 

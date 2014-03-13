@@ -37,8 +37,8 @@ var (
 		Hash: _sha("dd08687e90cca5ce563867c40346781e3b115d36"),
 	}
 
-	_fixture1Stream *Stream = &Stream{Object: _fixture1.Object}
-	_fixture3Stream *Stream = &Stream{Object: _fixture3.Object}
+	_fixture1Stream *Stream = NewStream(_fixture1.Object)
+	_fixture3Stream *Stream = NewStream(_fixture3.Object)
 )
 
 func TestStream_Reader_Blob(t *testing.T) {
@@ -103,28 +103,6 @@ func TestStream_Hash_Tree(t *testing.T) {
 	}
 }
 
-func TestStream_Rehash(t *testing.T) {
-	stream := &Stream{Object: _fixture1.Object}
-
-	if actual, expected := stream.Hash(), _fixture1.Hash; actual != expected {
-		t.Errorf("stream.Hash() = %v, want %v", actual, expected)
-	}
-
-	stream.Object = _fixture2.Object
-
-	// Call stream.Hash() again. The hash should stay the same.
-	if actual, expected := stream.Hash(), _fixture1.Hash; actual != expected {
-		t.Errorf("stream.Hash() = %v, want %v", actual, expected)
-	}
-
-	stream.Rehash()
-
-	// This time the hash should be updated.
-	if actual, expected := stream.Hash(), _fixture2.Hash; actual != expected {
-		t.Errorf("stream.Hash() = %v, want %v", actual, expected)
-	}
-}
-
 func TestStream_Decode_Blob(t *testing.T) {
 	var actual *Blob
 	var expected *Blob = _fixture1.Object.(*Blob)
@@ -135,7 +113,7 @@ func TestStream_Decode_Blob(t *testing.T) {
 		t.Errorf("stream.Decode() returned error %v", err)
 	}
 
-	actual = stream.Object.(*Blob)
+	actual = stream.Object().(*Blob)
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("stream.Object = %v, want %v", actual, expected)
 	}
@@ -151,7 +129,7 @@ func TestStream_Decode_Tree(t *testing.T) {
 		t.Errorf("stream.Decode() returned error %v", err)
 	}
 
-	actual = stream.Object.(*Tree).entries
+	actual = stream.Object().(*Tree).entries
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("stream.Object = %v, want %v", actual, expected)
 	}

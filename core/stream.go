@@ -15,11 +15,21 @@ import (
 // the full on-disk format: a header followed by the actual stream of bytes
 // that is the object's content.
 type Stream struct {
-	Object
+	object   Object
 	checksum Sha1
 }
 
 var _ EncodeDecoder = &Stream{}
+
+// NewStream returns a Stream that wraps the given object.
+func NewStream(object Object) *Stream {
+	return &Stream{object: object}
+}
+
+// Object returns the underlying Object that this stream wraps.
+func (stream *Stream) Object() Object {
+	return stream.object
+}
 
 // Reader returns an io.Reader that prepends the underlying encoded object
 // stream with a valid header, which consists of the human-readable identifier
@@ -27,7 +37,7 @@ var _ EncodeDecoder = &Stream{}
 // of the number of bytes in the object content, and terminated with a NULL
 // byte.
 func (stream *Stream) Reader() io.Reader {
-	object := stream.Object
+	object := stream.object
 	return io.MultiReader(
 		strings.NewReader(object.Type()),
 		bytes.NewReader([]byte{' '}),
@@ -53,13 +63,10 @@ func (stream *Stream) Hash() Sha1 {
 	if !stream.checksum.IsEmpty() {
 		return stream.checksum
 	}
-	return stream.Rehash()
+	return stream.rehash()
 }
 
-// Rehash clears the cached checksum, recalculates the checksum of this stream's
-// byte representation, and caches this new checksum. You must call this method
-// if you change the underlying object wrapped by a Stream.
-func (stream *Stream) Rehash() (checksum Sha1) {
+func (stream *Stream) rehash() (checksum Sha1) {
 	hash := sha1.New()
 	if _, err := io.Copy(hash, stream.Reader()); err != nil {
 		Die(err)
@@ -82,9 +89,9 @@ func (stream *Stream) Decode(reader io.Reader) error {
 
 		switch typeString {
 		case "blob":
-			stream.Object = &Blob{}
+			stream.object = &Blob{}
 		case "tree":
-			stream.Object = &Tree{}
+			stream.object = &Tree{}
 		default:
 			return errors.New(fmt.Sprintf("%v is not a known object type", typeString))
 		}
@@ -100,7 +107,7 @@ func (stream *Stream) Decode(reader io.Reader) error {
 		}
 
 		rest := &io.LimitedReader{R: r, N: length}
-		if err := stream.Object.Decode(rest); err != nil {
+		if err := stream.object.Decode(rest); err != nil {
 			return err
 		}
 	}

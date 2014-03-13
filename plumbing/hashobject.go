@@ -43,19 +43,20 @@ func HashObject(o HashObjectOptions) (hash core.Sha1, err error) {
 		o.Type = "blob"
 	}
 
-	stream := &core.Stream{}
+	var object core.Object
 	switch o.Type {
 	case "blob":
-		stream.Object = &core.Blob{}
+		object = &core.Blob{}
 	case "tree":
-		stream.Object = &core.Tree{}
+		object = &core.Tree{}
 	default:
 		return EmptySha, Errorf("%v is not a valid Type", o.Type)
 	}
 
-	if err := stream.Object.Decode(o.Reader); err != nil {
+	if err := object.Decode(o.Reader); err != nil {
 		return EmptySha, err
 	}
+	stream := core.NewStream(object)
 	hash = stream.Hash()
 
 	if !o.Write {
