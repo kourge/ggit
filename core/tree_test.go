@@ -21,10 +21,10 @@ var (
 		Name: "LICENSE",
 	}
 	_fixtureLicenseTreeEntryString string = "100644 LICENSE\x00\xbf\x4b\x7b\xee\x80\xcf\x3f\x91\x0f\xce\x25\x2f\x73\xb1\x89\xf1\xf3\xc2\x04\x2a"
-	_fixtureTree                   Tree   = Tree{Entries: []TreeEntry{
+	_fixtureTree                   *Tree  = NewTree([]TreeEntry{
 		_fixtureLicenseTreeEntry,
 		_fixtureReadmeTreeEntry,
-	}}
+	})
 )
 
 func TestTree_Type(t *testing.T) {
@@ -64,7 +64,7 @@ func TestTree_Reader(t *testing.T) {
 
 func TestTree_Decode(t *testing.T) {
 	var actual *Tree = &Tree{}
-	var expected *Tree = &_fixtureTree
+	var expected *Tree = _fixtureTree
 
 	r := io.MultiReader(
 		strings.NewReader(_fixtureLicenseTreeEntryString),

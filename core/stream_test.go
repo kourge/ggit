@@ -29,10 +29,10 @@ var (
 		Hash:   _sha("7400f1589a11d1b912d6a90574d4f836087599b1"),
 	}
 	_fixture3 = streamFixture{
-		Object: &Tree{Entries: []TreeEntry{
+		Object: NewTree([]TreeEntry{
 			{_frw_r__r__, "blob1", _fixture1.Hash},
 			{_frw_r__r__, "blob2", _fixture2.Hash},
-		}},
+		}),
 		Body: "tree 66\x00100644 blob1\x00\xbd\x9d\xbf\x5a\xae\x1a\x38\x62\xdd\x15\x26\x72\x32\x46\xb2\x02\x06\xe5\xfc\x37100644 blob2\x00\x74\x00\xf1\x58\x9a\x11\xd1\xb9\x12\xd6\xa9\x05\x74\xd4\xf8\x36\x08\x75\x99\xb1",
 		Hash: _sha("dd08687e90cca5ce563867c40346781e3b115d36"),
 	}
@@ -143,7 +143,7 @@ func TestStream_Decode_Blob(t *testing.T) {
 
 func TestStream_Decode_Tree(t *testing.T) {
 	var actual []TreeEntry
-	var expected []TreeEntry = _fixture3.Object.(*Tree).Entries
+	var expected []TreeEntry = _fixture3.Object.(*Tree).entries
 	stream := &Stream{}
 
 	err := stream.Decode(bytes.NewBufferString(_fixture3.Body))
@@ -151,7 +151,7 @@ func TestStream_Decode_Tree(t *testing.T) {
 		t.Errorf("stream.Decode() returned error %v", err)
 	}
 
-	actual = stream.Object.(*Tree).Entries
+	actual = stream.Object.(*Tree).entries
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("stream.Object = %v, want %v", actual, expected)
 	}
