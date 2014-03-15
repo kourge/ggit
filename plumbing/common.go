@@ -12,10 +12,6 @@ const (
 	DefaultObjectFileMode       os.FileMode = 0444
 )
 
-var (
-	EmptySha core.Sha1 = core.Sha1([20]byte{})
-)
-
 // Errorf is a wrapper around errors.New(fmt.Sprintf(format, rest...)).
 var Errorf = core.Errorf
 
