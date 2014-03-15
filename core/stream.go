@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/sha1"
-	"errors"
-	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -93,7 +91,7 @@ func (stream *Stream) Decode(reader io.Reader) error {
 		case "tree":
 			stream.object = &Tree{}
 		default:
-			return errors.New(fmt.Sprintf("%v is not a known object type", typeString))
+			return Errorf("%v is not a known object type", typeString)
 		}
 	}
 

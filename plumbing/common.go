@@ -1,8 +1,6 @@
 package plumbing
 
 import (
-	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -19,9 +17,7 @@ var (
 )
 
 // Errorf is a wrapper around errors.New(fmt.Sprintf(format, rest...)).
-func Errorf(format string, rest ...interface{}) error {
-	return errors.New(fmt.Sprintf(format, rest...))
-}
+var Errorf = core.Errorf
 
 // IsRepo returns true if the directory at path is a valid Git repository.
 func IsRepo(path string) bool {
