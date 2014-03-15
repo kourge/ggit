@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+// AuthorTime encapsulates both an Author and a time.Time, a construct usually
+// used to indicate an author or committer.
 type AuthorTime struct {
 	Author
 	time.Time
