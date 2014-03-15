@@ -9,6 +9,8 @@ import (
 // A Sha1 represents a 40-character hexadecimal SHA-1 hash checksum.
 type Sha1 [20]byte
 
+var _ Encoder = Sha1{}
+
 // Reader returns an io.Reader that yields the bytes that comprise the SHA-1
 // checksum.
 func (sha Sha1) Reader() io.Reader {
