@@ -70,7 +70,7 @@ Signed-off-by: Jack Nagel <jacknagel@gmail.com>`,
 	_fixture4Stream *Stream = NewStream(_fixture4.Object)
 
 	_streamTests = []struct {
-		Stream *Stream
+		Stream  *Stream
 		Fixture streamFixture
 	}{
 		{_fixture1Stream, _fixture1},
@@ -133,4 +133,3 @@ func TestStream_Decode(t *testing.T) {
 		}
 	}
 }
-
