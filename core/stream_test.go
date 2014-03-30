@@ -39,98 +39,69 @@ var (
 
 	_fixture1Stream *Stream = NewStream(_fixture1.Object)
 	_fixture3Stream *Stream = NewStream(_fixture3.Object)
+	_fixture4Stream *Stream = NewStream(_fixture4.Object)
+
+	_streamTests = []struct {
+		Stream *Stream
+		Fixture streamFixture
+	}{
+		{_fixture1Stream, _fixture1},
+		{_fixture3Stream, _fixture3},
+	}
 )
 
-func TestStream_Reader_Blob(t *testing.T) {
-	var actual []byte
-	var expected []byte = []byte(_fixture1.Body)
+func TestStream_Reader(t *testing.T) {
+	for _, s := range _streamTests {
+		var actual []byte
+		var expected []byte = []byte(s.Fixture.Body)
 
-	buffer := new(bytes.Buffer)
-	buffer.ReadFrom(_fixture1Stream.Reader())
-	actual = buffer.Bytes()
+		buffer := new(bytes.Buffer)
+		buffer.ReadFrom(s.Stream.Reader())
+		actual = buffer.Bytes()
 
-	if !bytes.Equal(actual, expected) {
-		t.Error("stream.Reader() did not generate same byte sequence")
+		if !bytes.Equal(actual, expected) {
+			t.Error("stream.Reader() did not generate same byte sequence")
+		}
 	}
 }
 
-func TestStream_Reader_Tree(t *testing.T) {
-	var actual []byte
-	var expected []byte = []byte(_fixture3.Body)
+func TestStream_Bytes(t *testing.T) {
+	for _, s := range _streamTests {
+		var actual []byte = s.Stream.Bytes()
+		var expected []byte = []byte(s.Fixture.Body)
 
-	buffer := new(bytes.Buffer)
-	buffer.ReadFrom(_fixture3Stream.Reader())
-	actual = buffer.Bytes()
-
-	if !bytes.Equal(actual, expected) {
-		t.Error("stream.Reader() did not generate same byte sequence")
+		if !bytes.Equal(actual, expected) {
+			t.Error("stream.Bytes() did not generate same byte sequence")
+		}
 	}
 }
 
-func TestStream_Bytes_Blob(t *testing.T) {
-	var actual []byte = _fixture1Stream.Bytes()
-	var expected []byte = []byte(_fixture1.Body)
+func TestStream_Hash(t *testing.T) {
+	for _, s := range _streamTests {
+		var actual Sha1 = s.Stream.Hash()
+		var expected Sha1 = s.Fixture.Hash
 
-	if !bytes.Equal(actual, expected) {
-		t.Error("stream.Bytes() did not generate same byte sequence")
+		if actual != expected {
+			t.Errorf("stream.Hash() = %v, want %v", actual, expected)
+		}
 	}
 }
 
-func TestStream_Bytes_Tree(t *testing.T) {
-	var actual []byte = _fixture3Stream.Bytes()
-	var expected []byte = []byte(_fixture3.Body)
+func TestStream_Decode(t *testing.T) {
+	for _, s := range _streamTests {
+		var actual Object
+		var expected Object = s.Fixture.Object
+		stream := &Stream{}
 
-	if !bytes.Equal(actual, expected) {
-		t.Error("stream.Bytes() did not generate same byte sequence")
+		err := stream.Decode(bytes.NewBufferString(s.Fixture.Body))
+		if err != nil {
+			t.Errorf("stream.Decode() returned error %v", err)
+		}
+
+		actual = stream.Object()
+		if !reflect.DeepEqual(actual, expected) {
+			t.Errorf("stream.Object = %v, want %v", actual, expected)
+		}
 	}
 }
 
-func TestStream_Hash_Blob(t *testing.T) {
-	var actual Sha1 = _fixture1Stream.Hash()
-	var expected Sha1 = _fixture1.Hash
-
-	if actual != expected {
-		t.Errorf("stream.Hash() = %v, want %v", actual, expected)
-	}
-}
-
-func TestStream_Hash_Tree(t *testing.T) {
-	var actual Sha1 = _fixture3Stream.Hash()
-	var expected Sha1 = _fixture3.Hash
-
-	if actual != expected {
-		t.Errorf("stream.Hash() = %v, want %v", actual, expected)
-	}
-}
-
-func TestStream_Decode_Blob(t *testing.T) {
-	var actual *Blob
-	var expected *Blob = _fixture1.Object.(*Blob)
-	stream := &Stream{}
-
-	err := stream.Decode(bytes.NewBufferString(_fixture1.Body))
-	if err != nil {
-		t.Errorf("stream.Decode() returned error %v", err)
-	}
-
-	actual = stream.Object().(*Blob)
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("stream.Object = %v, want %v", actual, expected)
-	}
-}
-
-func TestStream_Decode_Tree(t *testing.T) {
-	var actual []TreeEntry
-	var expected []TreeEntry = _fixture3.Object.(*Tree).entries
-	stream := &Stream{}
-
-	err := stream.Decode(bytes.NewBufferString(_fixture3.Body))
-	if err != nil {
-		t.Errorf("stream.Decode() returned error %v", err)
-	}
-
-	actual = stream.Object().(*Tree).entries
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("stream.Object = %v, want %v", actual, expected)
-	}
-}
