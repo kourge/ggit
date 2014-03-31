@@ -95,7 +95,7 @@ func TestCommit_Decode(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(*actual, *expected) {
-		t.Error("commit.Decode() produced %v, want %v", actual, expected)
+		t.Errorf("commit.Decode() produced %v, want %v", actual, expected)
 	}
 }
 

@@ -76,7 +76,7 @@ func TestTag_Decode(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(*actual, *expected) {
-		t.Error("tag.Decode() produced %v, want %v", actual, expected)
+		t.Errorf("tag.Decode() produced %v, want %v", actual, expected)
 	}
 }
 
