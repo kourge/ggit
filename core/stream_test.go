@@ -64,10 +64,27 @@ Signed-off-by: Jack Nagel <jacknagel@gmail.com>`,
 		Body: "commit 371\x00tree 935e0a5c8361e59f8bbc01b2dbfbec3a44e24904\nparent 775c7228621559623406857d1810a3153616336f\nauthor Kosuke Asami <tfortress58@gmail.com> 1395160458 +0900\ncommitter Jack Nagel <jacknagel@gmail.com> 1395293290 -0500\n\nbyobu 5.75\n\nThis release includes fixes about prefix problem that is discussed\nin #27045.\n\nCloses #27667.\n\nSigned-off-by: Jack Nagel <jacknagel@gmail.com>\n",
 		Hash: _sha("91465a197c01a5f022a224a592e769147db145a2"),
 	}
+	_fixture5 = streamFixture{
+		Object: NewTag(
+			Sha1{
+				0x6b, 0x6f, 0x8b, 0x56, 0x6e, 0xf3, 0x24, 0x5f, 0x5b, 0x25,
+				0xd0, 0x3c, 0x61, 0xb2, 0xaf, 0x0a, 0x1f, 0x55, 0x30, 0x1e,
+			},
+			"commit",
+			"v4.1.0.rc2",
+			NewAuthorTime(
+				"David Heinemeier Hansson", "david@loudthinking.com", 1395778247, 1*3600,
+			),
+			"v4.1.0.rc2 release",
+		),
+		Body: "tag 169\x00object 6b6f8b566ef3245f5b25d03c61b2af0a1f55301e\ntype commit\ntag v4.1.0.rc2\ntagger David Heinemeier Hansson <david@loudthinking.com> 1395778247 +0100\n\nv4.1.0.rc2 release\n",
+		Hash: _sha("d82b255a0f16a06ebd2a3fbfe4893719d697c043"),
+	}
 
 	_fixture1Stream *Stream = NewStream(_fixture1.Object)
 	_fixture3Stream *Stream = NewStream(_fixture3.Object)
 	_fixture4Stream *Stream = NewStream(_fixture4.Object)
+	_fixture5Stream *Stream = NewStream(_fixture5.Object)
 
 	_streamTests = []struct {
 		Stream  *Stream
@@ -76,6 +93,7 @@ Signed-off-by: Jack Nagel <jacknagel@gmail.com>`,
 		{_fixture1Stream, _fixture1},
 		{_fixture3Stream, _fixture3},
 		{_fixture4Stream, _fixture4},
+		{_fixture5Stream, _fixture5},
 	}
 )
 

@@ -92,6 +92,8 @@ func (stream *Stream) Decode(reader io.Reader) error {
 			stream.object = &Tree{}
 		case "commit":
 			stream.object = &Commit{}
+		case "tag":
+			stream.object = &Tag{}
 		default:
 			return Errorf("%v is not a known object type", typeString)
 		}
