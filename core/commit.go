@@ -76,28 +76,18 @@ func (commit *Commit) Size() int {
 
 // Reader returns an io.Reader that yields this commit in a serialized format.
 func (commit *Commit) Reader() io.Reader {
-	fields := fieldslice{
-		{"tree", &commit.tree},
-	}
+	n := len(commit.parents)
+	fields := make(fieldslice, n+4)
 
-	parents := make(fieldslice, len(commit.parents))
+	fields[0] = field{"tree", &commit.tree}
 	for i, parent := range commit.parents {
-		parents[i] = field{"parent", &parent}
+		fields[i+1] = field{"parent", &parent}
 	}
+	fields[n+1] = field{"author", commit.author}
+	fields[n+2] = field{"committer", commit.committer}
+	fields[n+3] = field{"message", &StringCoder{commit.message}}
 
-	fields = append(fields, parents...)
-	fields = append(fields, fieldslice{
-		{"author", commit.author},
-		{"committer", commit.committer},
-	}...)
-
-	readers := append(fields.Readers(), []io.Reader{
-		bytes.NewReader([]byte("\n\n")),
-		strings.NewReader(commit.message),
-		bytes.NewReader([]byte{'\n'}),
-	}...)
-
-	return io.MultiReader(readers...)
+	return io.MultiReader(fields.Readers()...)
 }
 
 func (commit *Commit) load() {

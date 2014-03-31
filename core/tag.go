@@ -71,20 +71,13 @@ func (tag *Tag) Size() int {
 // Reader returns an io.Reader that yields this annotated tag in a serialized
 // format.
 func (tag *Tag) Reader() io.Reader {
-	fields := fieldslice{
+	return io.MultiReader(fieldslice{
 		{"object", &tag.object},
 		{"type", &StringCoder{tag.objectType}},
 		{"tag", &StringCoder{tag.name}},
 		{"tagger", tag.tagger},
-	}
-
-	readers := append(fields.Readers(), []io.Reader{
-		bytes.NewReader([]byte("\n\n")),
-		strings.NewReader(tag.message),
-		bytes.NewReader([]byte{'\n'}),
-	}...)
-
-	return io.MultiReader(readers...)
+		{"message", &StringCoder{tag.message}},
+	}.Readers()...)
 }
 
 func (tag *Tag) load() {

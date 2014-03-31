@@ -46,13 +46,31 @@ type fieldslice []field
 var _ Encoder = fieldslice{}
 
 func (fs fieldslice) Readers() []io.Reader {
-	last := len(fs) - 1
-	readers := make([]io.Reader, len(fs)*2-1)
+	var message io.Reader = nil
+
+	n := len(fs)
+	last := n-1
+	size := n*2-1
+
+	if lastField := fs[last]; lastField.Name == "message" {
+		message = lastField.Value.Reader()
+		fs = fs[:last]
+		last -= 1
+		size = (n-1)*2-1+3
+	}
+
+	readers := make([]io.Reader, size)
 	for i, f := range fs {
 		readers[i*2] = f.Reader()
 		if i != last {
 			readers[i*2+1] = bytes.NewReader([]byte{'\n'})
 		}
+	}
+
+	if message != nil {
+		readers[last*2+1] = bytes.NewReader([]byte("\n\n"))
+		readers[last*2+2] = message
+		readers[last*2+3] = bytes.NewReader([]byte{'\n'})
 	}
 
 	return readers
