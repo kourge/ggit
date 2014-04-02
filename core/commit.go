@@ -60,6 +60,34 @@ func (commit *Commit) Message() string {
 	return commit.message
 }
 
+// ParentsEqual returns true if and only if this commit and the other commit
+// have the same number of parents and the same parents in the same order.
+// Otherwise false is returned.
+func (commit *Commit) ParentsEqual(other *Commit) bool {
+	a, b := commit.Parents(), other.Parents()
+
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, parent := range a {
+		if b[i] != parent {
+			return false
+		}
+	}
+	return true
+}
+
+// Equal returns true if this commit and the other commit have the same tree,
+// parents, author, committer, and message. Otherwise, false is returned.
+func (commit *Commit) Equal(other *Commit) bool {
+	return commit.Tree() == other.Tree() &&
+		commit.ParentsEqual(other) &&
+		commit.Author().Equal(other.Author()) &&
+		commit.Committer().Equal(other.Committer()) &&
+		commit.Message() == other.Message()
+}
+
 func (commit *Commit) Type() string {
 	return "commit"
 }

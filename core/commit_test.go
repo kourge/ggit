@@ -50,7 +50,51 @@ Closes #27667.
 
 Signed-off-by: Jack Nagel <jacknagel@gmail.com>
 `
+	_fixtureCommit2 *Commit = NewCommit(
+		Sha1{
+			0x2d, 0x95, 0x50, 0xa9, 0x1d, 0x46, 0x74, 0xe6, 0x4d, 0x03,
+			0xe2, 0xe6, 0x52, 0x9f, 0xdf, 0xeb, 0xd3, 0x6d, 0x91, 0x37,
+		},
+		[]Sha1{{
+			0x31, 0xbb, 0x0f, 0x62, 0x27, 0x5f, 0xf0, 0xae, 0xbe, 0xc0,
+			0x2a, 0x93, 0xb9, 0xda, 0x79, 0xe7, 0x69, 0x04, 0x3d, 0xee,
+		}},
+		NewAuthorTime(
+			"Matthew Hawkins", "darthmdh@gmail.com", 1396097804, 11*3600,
+		),
+		NewAuthorTime(
+			"Adam Vandenberg", "flangy@gmail.com", 1396328662, -7*3600,
+		),
+		`vim: add luajit support
+
+Add --with-luajit which passes through to the ./configure script
+to tell Vim to link against luajit instead of lua.
+
+Closes #27967.
+
+Signed-off-by: Adam Vandenberg <flangy@gmail.com>`,
+	)
 )
+
+func TestCommit_ParentsEqual(t *testing.T) {
+	if !_fixtureCommit.ParentsEqual(_fixtureCommit) {
+		t.Error("commit.Parents() should equal commit.Parents()")
+	}
+
+	if _fixtureCommit.ParentsEqual(_fixtureCommit2) {
+		t.Errorf("%v should not share parents with %v", _fixtureCommit, _fixtureCommit2)
+	}
+}
+
+func TestCommit_Equal(t *testing.T) {
+	if !_fixtureCommit.Equal(_fixtureCommit) {
+		t.Error("commit should equal self")
+	}
+
+	if _fixtureCommit.Equal(_fixtureCommit2) {
+		t.Errorf("%v should not equal %v", _fixtureCommit, _fixtureCommit2)
+	}
+}
 
 func TestCommit_Type(t *testing.T) {
 	var actual string = _fixtureCommit.Type()
