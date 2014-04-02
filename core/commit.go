@@ -1,11 +1,8 @@
 package core
 
 import (
-	"bytes"
 	"io"
 	"io/ioutil"
-	"strings"
-	"unicode"
 )
 
 // A Commit is a Git object type that points to a Tree and one or more Commits
@@ -98,33 +95,15 @@ func (commit *Commit) load() {
 	commit.buffer = buffer
 }
 
+func (commit *Commit) setBuffer(bytes []byte) {
+	commit.buffer = bytes
+}
+
 // Decode reads from an io.Reader, attempting to decode the stream as a
 // serialized Commit object. If any part of the stream is improperly formatted,
 // an error is returned.
 func (commit *Commit) Decode(reader io.Reader) error {
-	lines, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return err
-	}
-
-	parts := bytes.SplitN(lines, []byte("\n\n"), 2)
-	if len(parts) != 2 {
-		return Errorf("received %d parts while decoding commit", len(parts))
-	}
-
-	fieldBytes, message := parts[0], parts[1]
-	fields, err := fieldsliceDecode(bytes.NewReader(fieldBytes))
-	if err != nil {
-		return err
-	}
-
-	if err := commit.loadFields(fields); err != nil {
-		return err
-	}
-
-	commit.message = strings.TrimRightFunc(string(message), unicode.IsSpace)
-	commit.buffer = lines
-	return nil
+	return decodeFields(commit, reader)
 }
 
 func (commit *Commit) loadFields(fields fieldslice) error {
@@ -151,6 +130,10 @@ func (commit *Commit) loadFields(fields fieldslice) error {
 			v := &AuthorTime{}
 			err = v.Decode(s.Reader())
 			commit.committer = v
+		case "message":
+			v := &StringCoder{}
+			err = v.Decode(s.Reader())
+			commit.message = v.string
 		default:
 			Die(Errorf("unrecognized commit field %s", field.Name))
 		}

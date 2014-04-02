@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"io/ioutil"
 	"strings"
+	"unicode"
 )
 
 type field struct {
@@ -49,28 +51,26 @@ func (fs fieldslice) Readers() []io.Reader {
 	var message io.Reader = nil
 
 	n := len(fs)
-	last := n-1
-	size := n*2-1
+	last := n - 1
+	size := n * 2
 
 	if lastField := fs[last]; lastField.Name == "message" {
 		message = lastField.Value.Reader()
 		fs = fs[:last]
 		last -= 1
-		size = (n-1)*2-1+3
+		size = (n-1)*2 + 3
 	}
 
 	readers := make([]io.Reader, size)
 	for i, f := range fs {
 		readers[i*2] = f.Reader()
-		if i != last {
-			readers[i*2+1] = bytes.NewReader([]byte{'\n'})
-		}
+		readers[i*2+1] = bytes.NewReader([]byte{'\n'})
 	}
 
 	if message != nil {
-		readers[last*2+1] = bytes.NewReader([]byte("\n\n"))
-		readers[last*2+2] = message
-		readers[last*2+3] = bytes.NewReader([]byte{'\n'})
+		readers[last*2+2] = bytes.NewReader([]byte{'\n'})
+		readers[last*2+3] = message
+		readers[last*2+4] = bytes.NewReader([]byte{'\n'})
 	}
 
 	return readers
@@ -80,29 +80,62 @@ func (fs fieldslice) Reader() io.Reader {
 	return io.MultiReader(fs.Readers()...)
 }
 
+type fieldcoder interface {
+	Decoder
+	loadFields(fields fieldslice) error
+	setBuffer(bytes []byte)
+}
+
+func decodeFields(object fieldcoder, reader io.Reader) error {
+	buffer := new(bytes.Buffer)
+	r := io.TeeReader(reader, buffer)
+
+	if fields, err := fieldsliceDecode(r); err != nil {
+		return err
+	} else if err := object.loadFields(fields); err != nil {
+		return err
+	}
+
+	object.setBuffer(buffer.Bytes())
+	return nil
+}
+
 func fieldsliceDecode(reader io.Reader) (fields fieldslice, err error) {
 	r := bufio.NewReader(reader)
 
 	reachedEof := false
+	hasMessage := false
 	for !reachedEof {
-		field := &field{}
+		f := &field{}
 		line, err := r.ReadBytes(byte('\n'))
 
 		if err == io.EOF {
 			reachedEof = true
 		} else if err != nil {
-			return nil, err
-		} else {
+			return fields, err
+		} else if len(line) > 0 && !hasMessage {
 			line = line[:len(line)-1]
 		}
 
-		if err := field.Decode(bytes.NewReader(line)); err == io.EOF {
-			reachedEof = true
-		} else if err != nil {
-			return nil, err
+		if len(line) == 0 {
+			hasMessage = true
+			continue
+		} else if !hasMessage {
+			if err := f.Decode(bytes.NewReader(line)); err == io.EOF {
+				reachedEof = true
+			} else if err != nil {
+				return fields, err
+			}
+			fields = append(fields, *f)
+		} else {
+			rest, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fields, err
+			}
+			line = append(line, rest...)
+			message := strings.TrimRightFunc(string(line), unicode.IsSpace)
+			fields = append(fields, field{"message", &StringCoder{message}})
 		}
-
-		fields = append(fields, *field)
 	}
 
 	return
