@@ -66,7 +66,8 @@ func HashObject(o HashObjectOptions) (hash core.Sha1, err error) {
 	if o.Repo == "" {
 		return hash, errors.New("must specify Repo")
 	}
-	if !IsRepo(o.Repo) {
+	repo := NewRepository(o.Repo)
+	if !repo.IsValid() {
 		return hash, Errorf("not a repo: %s", o.Repo)
 	}
 
