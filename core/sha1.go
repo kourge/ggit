@@ -48,3 +48,14 @@ func Sha1FromString(s string) (sha Sha1, err error) {
 	copy(sha[:], bytes[:])
 	return
 }
+
+// Sha1FromByteSlice converts an arbitrarily-sized byte slice into a Sha1
+// checksum by copying into a 20-byte array. If the slice's size is lesser than
+// 20 bytes, then the remainder of the array is padded with zero bytes. If the
+// slice's size is greater than 20 bytes, anything past the 20th byte is
+// ignored.
+func Sha1FromByteSlice(slice []byte) Sha1 {
+	sha := Sha1{}
+	copy(sha[:], slice[:])
+	return sha
+}
