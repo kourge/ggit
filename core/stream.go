@@ -69,7 +69,7 @@ func (stream *Stream) rehash() (checksum Sha1) {
 	if _, err := io.Copy(hash, stream.Reader()); err != nil {
 		Die(err)
 	}
-	copy(checksum[:], hash.Sum(nil)[:])
+	checksum = Sha1FromByteSlice(hash.Sum(nil)[:])
 	stream.checksum = checksum
 	return
 }
