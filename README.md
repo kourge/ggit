@@ -15,3 +15,6 @@ the packages are roughly organized in this manner:
   `cat-file`)
 * `porcelain` comprises high-level actions that are assembled from plumbing.
   (e.g. `add`, `commit`, `reset`)
+
+Documentation is available from
+[godoc.org](http://godoc.org/github.com/kourge/ggit).
