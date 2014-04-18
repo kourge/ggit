@@ -3,7 +3,6 @@ package format
 import (
 	"bytes"
 	"container/list"
-	"errors"
 	"fmt"
 )
 
