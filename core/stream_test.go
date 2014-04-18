@@ -46,10 +46,10 @@ var (
 				0x77, 0x5c, 0x72, 0x28, 0x62, 0x15, 0x59, 0x62, 0x34, 0x06,
 				0x85, 0x7d, 0x18, 0x10, 0xa3, 0x15, 0x36, 0x16, 0x33, 0x6f,
 			}},
-			NewAuthorTime(
+			NewPerson(
 				"Kosuke Asami", "tfortress58@gmail.com", 1395160458, 9*3600,
 			),
-			NewAuthorTime(
+			NewPerson(
 				"Jack Nagel", "jacknagel@gmail.com", 1395293290, -5*3600,
 			),
 			`byobu 5.75
@@ -72,7 +72,7 @@ Signed-off-by: Jack Nagel <jacknagel@gmail.com>`,
 			},
 			"commit",
 			"v4.1.0.rc2",
-			NewAuthorTime(
+			NewPerson(
 				"David Heinemeier Hansson", "david@loudthinking.com", 1395778247, 1*3600,
 			),
 			"v4.1.0.rc2 release",

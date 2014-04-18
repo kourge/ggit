@@ -11,9 +11,9 @@ var (
 		0x6b, 0x6f, 0x8b, 0x56, 0x6e, 0xf3, 0x24, 0x5f, 0x5b, 0x25,
 		0xd0, 0x3c, 0x61, 0xb2, 0xaf, 0x0a, 0x1f, 0x55, 0x30, 0x1e,
 	}
-	_fixtureTagObjectType string     = "commit"
-	_fixtureTagName       string     = "v4.1.0.rc2"
-	_fixtureTagTagger     AuthorTime = NewAuthorTime(
+	_fixtureTagObjectType string = "commit"
+	_fixtureTagName       string = "v4.1.0.rc2"
+	_fixtureTagTagger     Person = NewPerson(
 		"David Heinemeier Hansson", "david@loudthinking.com", 1395778247, 1*3600,
 	)
 	_fixtureTagMessage string = "v4.1.0.rc2 release"
@@ -108,8 +108,8 @@ func TestTag_Name(t *testing.T) {
 }
 
 func TestTag_Tagger(t *testing.T) {
-	var actual AuthorTime = _fixtureTag.Tagger()
-	var expected AuthorTime = _fixtureTagTagger
+	var actual Person = _fixtureTag.Tagger()
+	var expected Person = _fixtureTagTagger
 
 	if !actual.Equal(expected) {
 		t.Errorf("tag.Tagger() = %v, want %v", actual, expected)

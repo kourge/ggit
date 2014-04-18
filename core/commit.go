@@ -11,8 +11,8 @@ import (
 type Commit struct {
 	tree      sha1field
 	parents   []sha1field
-	author    *AuthorTime
-	committer *AuthorTime
+	author    *Person
+	committer *Person
 	message   string
 
 	buffer []byte
@@ -24,7 +24,7 @@ var _ Object = &Commit{}
 func NewCommit(
 	tree Sha1,
 	parents []Sha1,
-	author, committer AuthorTime,
+	author, committer Person,
 	message string,
 ) *Commit {
 	ps := make([]sha1field, len(parents))
@@ -48,11 +48,11 @@ func (commit *Commit) Parents() []Sha1 {
 	return parents
 }
 
-func (commit *Commit) Author() AuthorTime {
+func (commit *Commit) Author() Person {
 	return *commit.author
 }
 
-func (commit *Commit) Committer() AuthorTime {
+func (commit *Commit) Committer() Person {
 	return *commit.committer
 }
 
@@ -151,11 +151,11 @@ func (commit *Commit) loadFields(fields fieldslice) error {
 			err = v.Decode(s.Reader())
 			parents = append(parents, *v)
 		case "author":
-			v := &AuthorTime{}
+			v := &Person{}
 			err = v.Decode(s.Reader())
 			commit.author = v
 		case "committer":
-			v := &AuthorTime{}
+			v := &Person{}
 			err = v.Decode(s.Reader())
 			commit.committer = v
 		case "message":

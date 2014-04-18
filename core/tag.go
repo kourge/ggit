@@ -14,7 +14,7 @@ type Tag struct {
 	object     sha1field
 	objectType string
 	name       string
-	tagger     *AuthorTime
+	tagger     *Person
 	message    string
 
 	buffer []byte
@@ -28,7 +28,7 @@ func NewTag(
 	object Sha1,
 	objectType string,
 	name string,
-	tagger AuthorTime,
+	tagger Person,
 	message string,
 ) *Tag {
 	return &Tag{sha1field{object}, objectType, name, &tagger, message, nil}
@@ -46,7 +46,7 @@ func (tag *Tag) Name() string {
 	return tag.name
 }
 
-func (tag *Tag) Tagger() AuthorTime {
+func (tag *Tag) Tagger() Person {
 	return *tag.tagger
 }
 
@@ -115,7 +115,7 @@ func (tag *Tag) loadFields(fields fieldslice) error {
 			err = v.Decode(s.Reader())
 			tag.name = v.string
 		case "tagger":
-			v := &AuthorTime{}
+			v := &Person{}
 			err = v.Decode(s.Reader())
 			tag.tagger = v
 		case "message":

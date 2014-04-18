@@ -15,10 +15,10 @@ var (
 		0x77, 0x5c, 0x72, 0x28, 0x62, 0x15, 0x59, 0x62, 0x34, 0x06,
 		0x85, 0x7d, 0x18, 0x10, 0xa3, 0x15, 0x36, 0x16, 0x33, 0x6f,
 	}}
-	_fixtureCommitAuthor AuthorTime = NewAuthorTime(
+	_fixtureCommitAuthor Person = NewPerson(
 		"Kosuke Asami", "tfortress58@gmail.com", 1395160458, 9*3600,
 	)
-	_fixtureCommitCommitter AuthorTime = NewAuthorTime(
+	_fixtureCommitCommitter Person = NewPerson(
 		"Jack Nagel", "jacknagel@gmail.com", 1395293290, -5*3600,
 	)
 	_fixtureCommitMessage string = `byobu 5.75
@@ -59,10 +59,10 @@ Signed-off-by: Jack Nagel <jacknagel@gmail.com>
 			0x31, 0xbb, 0x0f, 0x62, 0x27, 0x5f, 0xf0, 0xae, 0xbe, 0xc0,
 			0x2a, 0x93, 0xb9, 0xda, 0x79, 0xe7, 0x69, 0x04, 0x3d, 0xee,
 		}},
-		NewAuthorTime(
+		NewPerson(
 			"Matthew Hawkins", "darthmdh@gmail.com", 1396097804, 11*3600,
 		),
-		NewAuthorTime(
+		NewPerson(
 			"Adam Vandenberg", "flangy@gmail.com", 1396328662, -7*3600,
 		),
 		`vim: add luajit support
@@ -162,8 +162,8 @@ func TestCommit_Parents(t *testing.T) {
 }
 
 func TestCommit_Author(t *testing.T) {
-	var actual AuthorTime = _fixtureCommit.Author()
-	var expected AuthorTime = _fixtureCommitAuthor
+	var actual Person = _fixtureCommit.Author()
+	var expected Person = _fixtureCommitAuthor
 
 	if !actual.Equal(expected) {
 		t.Errorf("commit.Author() = %v, want %v", actual, expected)
@@ -171,8 +171,8 @@ func TestCommit_Author(t *testing.T) {
 }
 
 func TestCommit_Committer(t *testing.T) {
-	var actual AuthorTime = _fixtureCommit.Committer()
-	var expected AuthorTime = _fixtureCommitCommitter
+	var actual Person = _fixtureCommit.Committer()
+	var expected Person = _fixtureCommitCommitter
 
 	if !actual.Equal(expected) {
 		t.Errorf("commit.Committer() = %v, want %v", actual, expected)
