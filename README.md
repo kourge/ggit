@@ -8,8 +8,10 @@ the packages are roughly organized in this manner:
   objects (blobs, trees, commits, tags), refs, symbolic refs, etc.
 * `config` contains types that read, write, and change INI-style config
   files used by Git.
+* `format` provides types that load, save, and manipulate on-disk metadata
+  formats like index files and pack files.
 * `plumbing` encompasses low-level functions that can be used to directly
   manipulate various Git objects within a repository. (e.g. `hash-object`,
   `cat-file`)
-* `porcelain` will comprise high-level actions that are assembled from plumbing.
+* `porcelain` comprises high-level actions that are assembled from plumbing.
   (e.g. `add`, `commit`, `reset`)
