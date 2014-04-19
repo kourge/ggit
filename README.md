@@ -10,6 +10,8 @@ the packages are roughly organized in this manner:
   files used by Git.
 * `format` provides types that load, save, and manipulate on-disk metadata
   formats like index files and pack files.
+* `util` houses useful data structures and convenience types for sophisticated
+  IO-related operations.
 * `plumbing` encompasses low-level functions that can be used to directly
   manipulate various Git objects within a repository. (e.g. `hash-object`,
   `cat-file`)
