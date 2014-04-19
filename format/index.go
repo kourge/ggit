@@ -3,7 +3,10 @@ package format
 import (
 	"bufio"
 	"bytes"
+	"crypto/sha1"
 	"encoding/binary"
+	"errors"
+	"hash"
 	"io"
 
 	"github.com/kourge/ggit/core"
@@ -21,11 +24,15 @@ type indexHeader struct {
 
 // An Index is the in-memory representation of a Git index file, which is
 // a stored version of a repository's working tree.
+//
+// Typically, the ReaderLen field should be set to the total number of bytes
+// that the io.Reader given to Decode is expected to yield.
 type Index struct {
 	version    uint32
 	entries    []indexEntry
 	extensions []indexExtension
 	sha1       core.Sha1
+	ReaderLen  int64
 }
 
 var _ core.Decoder = &Index{}
@@ -34,12 +41,23 @@ var _ core.Decoder = &Index{}
 // parses it. An error is returned if the stream forms an invalid index file.
 // Otherwise nil is returned.
 //
+// If ReaderLen is left as a zero value, then the integrity of the index file
+// being decoded will not be verified against the SHA-1 hash located in the
+// index file itself. Conversely, if ReaderLen is given a non-zero value, an
+// index file may be decoded successfully and still return an error from Decode
+// due to failing the integrity verification.
+//
 // See
 // https://www.kernel.org/pub/software/scm/git/docs/technical/index-format.txt
 // for more information on the file format.
 func (idx *Index) Decode(reader io.Reader) error {
+	var shaWriter hash.Hash
+	if idx.ReaderLen != 0 {
+		shaWriter = sha1.New()
+		limitWriter := SilentLimitWriter(shaWriter, idx.ReaderLen - sha1.Size)
+		reader = io.TeeReader(reader, limitWriter)
+	}
 	r := bufio.NewReader(reader)
-	// TODO: Verify SHA-1
 
 	header, err := decodeIndexHeader(idx, r)
 	if err != nil {
@@ -52,6 +70,13 @@ func (idx *Index) Decode(reader io.Reader) error {
 
 	if err = decodeIndexExtensionsAndSha1(idx, r); err != nil {
 		return err
+	}
+
+	if idx.ReaderLen != 0 && shaWriter != nil {
+		actualSha1 := core.Sha1FromByteSlice(shaWriter.Sum(nil))
+		if actualSha1 != idx.sha1 {
+			return Errorf("index SHA-1 was %s, expected %s", actualSha1, idx.sha1)
+		}
 	}
 
 	return nil
@@ -130,7 +155,9 @@ func decodeIndexExtensionsAndSha1(idx *Index, r *bufio.Reader) error {
 	for {
 		if tentativeSha1, err := tryReadSha1(r); err == nil {
 			idx.sha1 = tentativeSha1
-			break
+			return nil
+		} else if err != errSha1NotYetReached {
+			return err
 		}
 
 		extensionHeader := &indexExtensionHeader{}
@@ -163,18 +190,14 @@ func decodeIndexExtensionsAndSha1(idx *Index, r *bufio.Reader) error {
 	return nil
 }
 
-type errSha1NotYetReached struct{}
-
-func (e errSha1NotYetReached) Error() string {
-	return "SHA-1 checksum not yet reached in index"
-}
+var errSha1NotYetReached = errors.New("SHA-1 checksum not yet reached in index")
 
 func tryReadSha1(r *bufio.Reader) (sha1 core.Sha1, err error) {
 	sha1Size := 20
 	if tentativeSha1, _ := r.Peek(sha1Size + 1); len(tentativeSha1) == sha1Size {
 		return core.Sha1FromByteSlice(tentativeSha1), nil
 	} else {
-		return core.Sha1{}, errSha1NotYetReached{}
+		return core.Sha1{}, errSha1NotYetReached
 	}
 }
 
