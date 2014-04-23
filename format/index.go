@@ -55,7 +55,7 @@ func (idx *Index) Decode(reader io.Reader) error {
 	var shaWriter hash.Hash
 	if idx.ReaderLen != 0 {
 		shaWriter = sha1.New()
-		limitWriter := util.SilentLimitWriter(shaWriter, idx.ReaderLen - sha1.Size)
+		limitWriter := util.SilentLimitWriter(shaWriter, idx.ReaderLen-sha1.Size)
 		reader = io.TeeReader(reader, limitWriter)
 	}
 	r := bufio.NewReader(reader)

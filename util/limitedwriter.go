@@ -27,10 +27,10 @@ func SilentLimitWriter(w io.Writer, n int64) *LimitedWriter {
 
 // A LimitedWriter writes to W but limits the total amount of data written to
 // just N bytes. Each call to Write updates N to reflect the new amount
-// remaining. 
+// remaining.
 type LimitedWriter struct {
-	W io.Writer
-	N int64
+	W          io.Writer
+	N          int64
 	limitError error
 }
 
