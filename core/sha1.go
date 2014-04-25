@@ -38,6 +38,12 @@ func (sha Sha1) IsEmpty() bool {
 	return bytes.Count(sha[:], []byte{0}) == 20
 }
 
+// Compare returns an integer comparing the two checksums lexicographically.
+// The result will be 0 if sha==other, -1 if sha < other, and +1 if sha < other.
+func (sha Sha1) Compare(other Sha1) int {
+	return bytes.Compare(sha[:], other[:])
+}
+
 // Sha1FromString attempts to parse a 40-character hexadecimal string as a Sha1
 // checksum. An error is returned if the string is not well-formed.
 func Sha1FromString(s string) (sha Sha1, err error) {

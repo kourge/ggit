@@ -48,6 +48,31 @@ func TestSha1_IsEmpty(t *testing.T) {
 	}
 }
 
+func TestSha1_Compare_Equal(t *testing.T) {
+	if _fixtureSha.Compare(_fixtureSha) != 0 {
+		t.Errorf("%#v does not equal itself", _fixtureSha)
+	}
+}
+
+func TestSha1_Compare_GreaterThan(t *testing.T) {
+	zeroSha1 := Sha1{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+	if _fixtureSha.Compare(zeroSha1) <= 0 {
+		t.Errorf("(%#v).Compare(%#v) = %d, expected > 0", _fixtureSha, zeroSha1)
+	}
+}
+
+func TestSha1_Compare_LesserThan(t *testing.T) {
+	fullSha1 := Sha1{
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+	}
+
+	if _fixtureSha.Compare(fullSha1) >= 0 {
+		t.Errorf("(%#v).Compare(%#v) = %d, expected < 0", _fixtureSha, fullSha1)
+	}
+}
+
 func TestSha1FromString(t *testing.T) {
 	s := "bd9dbf5aae1a3862dd1526723246b20206e5fc37"
 	actual, err := Sha1FromString(s)
