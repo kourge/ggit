@@ -46,7 +46,7 @@ func (s *GapSlice) Len() int {
 // to the slice. If the index lands on a value node, then the offset is
 // meaningless and set to 0.
 func (s *GapSlice) locate(i int) (elem *list.Element, offset int) {
-	if i >= s.size {
+	if i < 0 || i >= s.size {
 		return nil, 0
 	}
 
@@ -76,10 +76,6 @@ func (s *GapSlice) locate(i int) (elem *list.Element, offset int) {
 // is within bounds, then v is the item retried and exists is set to true. If
 // the index is out of bounds, then v is set to nil and exists will be false.
 func (s *GapSlice) Get(i int) (v interface{}, exists bool) {
-	if i >= s.size {
-		return nil, false
-	}
-
 	e, offset := s.locate(i)
 	if e == nil {
 		return nil, false
@@ -152,10 +148,6 @@ func (s *GapSlice) InsertAt(i int, v interface{}) (success bool) {
 // return value v is the item that was found at i. If i is out of bounds, then
 // v is set to nil and exists will be false. Otherwise, exists will be true.
 func (s *GapSlice) RemoveAt(i int) (v interface{}, exists bool) {
-	if i > s.size {
-		return nil, false
-	}
-
 	list := s.list
 
 	e, offset := s.locate(i)
