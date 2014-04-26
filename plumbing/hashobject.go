@@ -36,7 +36,7 @@ type HashObjectOptions struct {
 // details.
 func HashObject(o HashObjectOptions) (hash core.Sha1, err error) {
 	if o.Reader == nil {
-		return core.EmptySha1, errors.New("Reader must not be nil")
+		return core.Sha1{}, errors.New("Reader must not be nil")
 	}
 
 	if o.Type == "" {
@@ -50,11 +50,11 @@ func HashObject(o HashObjectOptions) (hash core.Sha1, err error) {
 	case "tree":
 		object = &core.Tree{}
 	default:
-		return core.EmptySha1, Errorf("%v is not a valid Type", o.Type)
+		return core.Sha1{}, Errorf("%v is not a valid Type", o.Type)
 	}
 
 	if err := object.Decode(o.Reader); err != nil {
-		return core.EmptySha1, err
+		return core.Sha1{}, err
 	}
 	stream := core.NewStream(object)
 	hash = stream.Hash()
