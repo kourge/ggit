@@ -26,6 +26,10 @@ func (sha Sha1) String() string {
 	return fmt.Sprintf("%040x", [20]byte(sha))
 }
 
+func (sha Sha1) GoString() string {
+	return fmt.Sprintf("Sha1{%s}", sha)
+}
+
 // Split returns two string values, obtained by splitting the checksum at index
 // n.
 func (sha Sha1) Split(n int) (string, string) {
