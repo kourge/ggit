@@ -21,7 +21,7 @@ type packIndexV2Header struct {
 type PackIndexV2 struct {
 	packIndexV2Header
 	objectNames    []core.Sha1 // sorted
-	crc32Checksums []uint32
+	crc32Checksums []core.Crc32
 	offsets        []uint32
 	higherOffsets  []uint64
 	packfileSha1   core.Sha1
@@ -53,7 +53,7 @@ func (idx *PackIndexV2) Decode(reader io.Reader) error {
 		return err
 	}
 
-	idx.crc32Checksums = make([]uint32, entryCount)
+	idx.crc32Checksums = make([]core.Crc32, entryCount)
 	if err := binary.Read(r, binary.BigEndian, idx.crc32Checksums); err != nil {
 		return err
 	}
@@ -135,13 +135,13 @@ func (idx *PackIndexV2) OffsetForPos(pos PackIndexPos) (offset int64, err error)
 	return int64(idx.offsets[pos]), nil
 }
 
-// Crc32ForPos returns the CRC32 checksum of an object within the pack index's
+// Crc32ForPos returns the CRC-32 checksum of an object within the pack index's
 // corresponding pack file, given that object's abstract position. If the given
 // position is invalid, 0 is returned as the checksum and the value
 // ErrInvalidPackIndexPos is returned as the error.
-func (idx *PackIndexV2) Crc32ForPos(pos PackIndexPos) (checksum uint32, err error) {
+func (idx *PackIndexV2) Crc32ForPos(pos PackIndexPos) (checksum core.Crc32, err error) {
 	if pos < PackIndexPos(0) || int(pos) >= len(idx.offsets) {
-		return 0, ErrInvalidPackIndexPos
+		return core.Crc32{}, ErrInvalidPackIndexPos
 	}
 
 	return idx.crc32Checksums[pos], nil
