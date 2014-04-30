@@ -26,6 +26,11 @@ func NewRepository(path string) *Repository {
 	return &Repository{path: filepath.Clean(path)}
 }
 
+// Path returns the path used to initialize the Repository.
+func (repo *Repository) Path() string {
+	return repo.path
+}
+
 // IsRepo returns true if the path used to initialize the Repository is in fact
 // a valid one.
 func (repo *Repository) IsValid() bool {
