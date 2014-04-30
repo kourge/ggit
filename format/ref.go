@@ -18,7 +18,7 @@ var (
 // A Git ref is simply a name in a repository that points to an object's SHA-1
 // hash. The name usually starts with "refs/" and has multiple components
 // separated by slashes.
-// 
+//
 // In a repository, a ref traditionally starts out as simply a file residing at
 // a particular path whose content contains the SHA-1 hash of the object to
 // which it points. This is a loose ref, but if it is not updated often, it ends
