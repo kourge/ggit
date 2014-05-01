@@ -48,7 +48,7 @@ func (sha Sha1) Compare(other Sha1) int {
 // Sha1FromString attempts to parse a 40-character hexadecimal string as a Sha1
 // checksum. An error is returned if the string is not well-formed.
 func Sha1FromString(s string) (sha Sha1, err error) {
-	bytes := make([]byte, 40)
+	bytes := []byte(nil)
 	if _, err := fmt.Sscanf(s, "%040x", &bytes); err != nil {
 		return sha, err
 	}
