@@ -18,6 +18,25 @@ type packIndexV2Header struct {
 	Fanout  [256]uint32
 }
 
+// The PackIndexV2 type represents the improved version 2 pack index format. The
+// v2 format starts out with a magic number that is interpreted by v1 format
+// decoders as an invalid fanout value. Following the magic signature is an
+// actual 4-byte version number and a fan-out table identical to that of the v1
+// format.
+//
+// Entries now consist of three parts: the SHA-1 hash of an object, the CRC32
+// checksum of the packed entry data, and the offset into the pack. What
+// distinguishes the v2 format from the v1 format is how entries are organized:
+// all the SHA-1 hashes are packed together, as are the CRC32 checksums and the
+// offsets themselves. In other words, three parallel arrays are used to
+// represent entries for better cache locality.
+//
+// Lastly, the offsets are encoded so that an offset larger than 0x7fffffff
+// actually points to another table of 64-bit offsets, so the v2 format supports
+// pack files up to 16 EiB.
+//
+// For more information on the pack and pack index format, see:
+// https://www.kernel.org/pub/software/scm/git/docs/technical/pack-format.txt
 type PackIndexV2 struct {
 	packIndexV2Header
 	objectNames    []core.Sha1 // sorted

@@ -18,6 +18,20 @@ type packIndexV1Entry struct {
 	ObjectName core.Sha1
 }
 
+// The PackIndexV1 type represents the original (version 1) pack index format.
+// The v1 format is very simple: it consists of a first-level fan-out table
+// followed by entries that each consist of a 32-bit pack offset and the 20-byte
+// SHA-1 hash of the object that said offset points to.
+//
+// This format has two major weaknesses: due to the entry offset size, it cannot
+// support pack files over 4 GiB in size, and the structure of an entry tends to
+// poor cache locality because consecutive entries form a stream of
+// zebra-striped offsets and hashes. In addition, this format can detect if the
+// pack file has any data corruption, but not which individual pack entry is
+// corrupted. All of these problems are addressed in the v2 format.
+//
+// For more information on the pack and pack index format, see:
+// https://www.kernel.org/pub/software/scm/git/docs/technical/pack-format.txt
 type PackIndexV1 struct {
 	packIndexV1Header
 	entries       []packIndexV1Entry
