@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	symrefHeaderMagic   = []byte("ref: ")
-	ErrRefInvalidHeader = errors.New("invalid symref header")
-	ErrRefInvalidPath   = errors.New("invalid symref path")
+	symrefHeaderMagic      = []byte("ref: ")
+	ErrInvalidSymref       = errors.New("invalid symref header")
+	ErrInvalidSymrefTarget = errors.New("invalid symref target")
 )
 
 // A Symref represents a symbolic ref. The most prominent example of a Git
@@ -25,18 +25,13 @@ var (
 // now, a symbolic ref is a regular file whose content indicates the ref it
 // points to.
 type Symref struct {
-	Path string
+	Target string
 }
 
 var _ core.EncodeDecoder = &Symref{}
 
-// String returns the path of the ref to which this Symref points.
-func (r Symref) String() string {
-	return r.Path
-}
-
 func (r Symref) GoString() string {
-	return fmt.Sprintf("Symref{%s}", strconv.Quote(r.Path))
+	return fmt.Sprintf("Symref{%s}", strconv.Quote(r.Target))
 }
 
 // Reader returns an io.Reader that yields a version of this Symref that can be
@@ -44,7 +39,7 @@ func (r Symref) GoString() string {
 func (r Symref) Reader() io.Reader {
 	return io.MultiReader(
 		bytes.NewReader(symrefHeaderMagic),
-		strings.NewReader(r.Path),
+		strings.NewReader(r.Target),
 	)
 }
 
@@ -53,19 +48,22 @@ func (r Symref) Reader() io.Reader {
 func (r *Symref) Decode(reader io.Reader) error {
 	header := make([]byte, len(symrefHeaderMagic))
 	if n, err := reader.Read(header); err != nil || n != len(symrefHeaderMagic) {
-		return ErrRefInvalidHeader
+		return ErrInvalidSymref
 	} else if !bytes.Equal(header, symrefHeaderMagic) {
-		return ErrRefInvalidHeader
+		return ErrInvalidSymref
 	}
 
 	if rest, err := ioutil.ReadAll(reader); err != nil {
 		return err
 	} else {
-		r.Path = string(rest)
+		if newline := bytes.IndexByte(rest, '\n'); newline != -1 {
+			rest = rest[:newline]
+		}
+		r.Target = string(rest)
 	}
 
-	if !strings.HasPrefix(r.Path, "refs/") {
-		return ErrRefInvalidPath
+	if !strings.HasPrefix(r.Target, "refs/") {
+		return ErrInvalidSymrefTarget
 	}
 
 	return nil
