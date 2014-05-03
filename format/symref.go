@@ -43,8 +43,11 @@ func (r Symref) Reader() io.Reader {
 	)
 }
 
-// Decode reads from an io.Reader and attempts to parse the byte stream as a
-// Symref that was previously written to disk.
+// Decode reads from an io.Reader and attempts to parse the byte stream as
+// a Symref that was previously written to disk. If the data is invalid and
+// cannot be interpreted as a symbolic ref, ErrInvalidSymref is returned. If the
+// data is valid but points to something that does not look like a ref (i.e.
+// does not start with "refs/"), ErrInvalidSymrefTarget is returned.
 func (r *Symref) Decode(reader io.Reader) error {
 	header := make([]byte, len(symrefHeaderMagic))
 	if n, err := reader.Read(header); err != nil || n != len(symrefHeaderMagic) {
