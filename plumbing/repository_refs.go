@@ -10,8 +10,10 @@ import (
 )
 
 var (
-	ErrRefNotFound = errors.New("ref not found in repo")
-	ErrInvalidRef  = format.ErrInvalidRef
+	ErrRefNotFound         = errors.New("ref not found in repo")
+	ErrInvalidRef          = format.ErrInvalidRef
+	ErrInvalidSymref       = format.ErrInvalidSymref
+	ErrInvalidSymrefTarget = format.ErrInvalidSymrefTarget
 )
 
 // Sha1ByRef looks for a ref within this repository. It first searches the
@@ -79,4 +81,30 @@ func (repo *Repository) Sha1FromPackedRefs(ref string) (core.Sha1, error) {
 	} else {
 		return sha1, nil
 	}
+}
+
+// RefBySymref looks for a symbolic ref within this repository with the given
+// name. If the symbolic ref does not exist, an empty string and the error
+// ErrRefNotFound are returned. If the symbolic ref does exist, but contains
+// invalid data, then an empty string and the error ErrInvalidSymref are
+// returned. If the symbolic ref points to something that does not look like
+// a ref (i.e. does not start with "refs/"), then an empty string and the error
+// ErrInvalidSymrefTarget are returned.
+func (repo *Repository) RefBySymref(symrefName string) (string, error) {
+	path := filepath.Join(repo.Path(), symrefName)
+
+	file, err := os.Open(path)
+	if os.IsNotExist(err) {
+		return "", ErrRefNotFound
+	} else if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	symref := &format.Symref{}
+	if err := symref.Decode(file); err != nil {
+		return "", err
+	}
+
+	return symref.Target, nil
 }
