@@ -48,6 +48,18 @@ const (
 	PackIndexPosNotFound PackIndexPos = -1
 )
 
+// PackIndexEntry represents an entry within a pack index. An entry is consisted
+// of three things: an offset into the corresponding pack, the SHA-1 of the
+// object that resides at that offset, and the CRC-32 of said object in its raw
+// form in the pack. Note that only Offset and Sha1 are guaranteed to return
+// meaningful values; early versions of pack indices did not include the CRC-32
+// of objects.
+type PackIndexEntry interface {
+	Offset() int64
+	Sha1() core.Sha1
+	Crc32() core.Crc32
+}
+
 // PackIndexFromReader examines the given io.Reader, detects the right version
 // of the pack index format, and decodes the stream.
 func PackIndexFromReader(reader io.Reader) (idx PackIndex, err error) {
