@@ -120,6 +120,28 @@ func (idx *PackIndexV2) Objects() []core.Sha1 {
 	return idx.objectNames
 }
 
+// EntryForSha1 returns a PackIndexEntry whose Sha1() value matches that of the
+// given object. If the given object is not found in the pack index, nil is
+// returned.
+func (idx *PackIndexV2) EntryForSha1(object core.Sha1) PackIndexEntry {
+	lower := 0
+	if object[0] != 0x00 {
+		lower = int(idx.Fanout[int(object[0])-1])
+	}
+	upper := int(idx.Fanout[int(object[0])])
+	entries := idx.objectNames[lower:upper]
+
+	pos := sort.Search(len(entries), func(i int) bool {
+		return entries[i].Compare(object) >= 0
+	})
+
+	if pos == len(entries) {
+		return nil
+	}
+
+	return packIndexV2Entry{idx: idx, pos: pos + lower}
+}
+
 // PosForSha1 returns the abstract position of the given object within the pack
 // index. If the given object is not found in the pack index, the value
 // PackIndexPosNotFound is returned.
@@ -164,4 +186,33 @@ func (idx *PackIndexV2) Crc32ForPos(pos PackIndexPos) (checksum core.Crc32, err 
 	}
 
 	return idx.crc32Checksums[pos], nil
+}
+
+type packIndexV2Entry struct {
+	idx *PackIndexV2
+	pos int
+}
+
+var _ PackIndexEntry = packIndexV2Entry{}
+
+func (e packIndexV2Entry) Offset() int64 {
+	return int64(e.idx.offsets[e.pos])
+}
+
+func (e packIndexV2Entry) Sha1() core.Sha1 {
+	return e.idx.objectNames[e.pos]
+}
+
+func (e packIndexV2Entry) Crc32() core.Crc32 {
+	return e.idx.crc32Checksums[e.pos]
+}
+
+// Entries returns a slice that represents entries in this pack index.
+func (idx *PackIndexV2) Entries() []PackIndexEntry {
+	entries := make([]PackIndexEntry, len(idx.objectNames))
+	for i := 0; i < len(entries); i++ {
+		entries[i] = packIndexV2Entry{idx: idx, pos: i}
+	}
+
+	return entries
 }

@@ -18,6 +18,24 @@ type packIndexV1Entry struct {
 	ObjectName core.Sha1
 }
 
+type packIndexV1EntryWrapper struct {
+	entry *packIndexV1Entry
+}
+
+var _ PackIndexEntry = packIndexV1EntryWrapper{}
+
+func (e packIndexV1EntryWrapper) Offset() int64 {
+	return int64(e.entry.Offset)
+}
+
+func (e packIndexV1EntryWrapper) Sha1() core.Sha1 {
+	return e.entry.ObjectName
+}
+
+func (e packIndexV1EntryWrapper) Crc32() core.Crc32 {
+	return core.Crc32{}
+}
+
 // The PackIndexV1 type represents the original (version 1) pack index format.
 // The v1 format is very simple: it consists of a first-level fan-out table
 // followed by entries that each consist of a 32-bit pack offset and the 20-byte
@@ -87,6 +105,28 @@ func (idx *PackIndexV1) Objects() []core.Sha1 {
 	return objects
 }
 
+// EntryForSha1 returns a PackIndexEntry whose Sha1() value matches that of the
+// given object. If the given object is not found in the pack index, nil is
+// returned.
+func (idx *PackIndexV1) EntryForSha1(object core.Sha1) PackIndexEntry {
+	lower := 0
+	if object[0] != 0x00 {
+		lower = int(idx.Fanout[int(object[0])-1])
+	}
+	upper := int(idx.Fanout[int(object[0])])
+	entries := idx.entries[lower:upper]
+
+	pos := sort.Search(len(entries), func(i int) bool {
+		return entries[i].ObjectName.Compare(object) >= 0
+	})
+
+	if pos == len(entries) {
+		return nil
+	}
+
+	return packIndexV1EntryWrapper{&idx.entries[pos + lower]}
+}
+
 // PosForSha1 returns the abstract position of the given object within the pack
 // index. If the given object is not found in the pack index, the value
 // PackIndexPosNotFound is returned.
@@ -119,4 +159,14 @@ func (idx *PackIndexV1) OffsetForPos(pos PackIndexPos) (offset int64, err error)
 	}
 
 	return int64(idx.entries[pos].Offset), nil
+}
+
+// Entries returns a slice that represents entries in this pack index.
+func (idx *PackIndexV1) Entries() []PackIndexEntry {
+	entries := make([]PackIndexEntry, len(idx.entries))
+	for i := 0; i < len(entries); i++ {
+		entries[i] = packIndexV1EntryWrapper{&idx.entries[i]}
+	}
+
+	return entries
 }

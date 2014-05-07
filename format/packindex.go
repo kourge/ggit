@@ -35,6 +35,14 @@ type PackIndex interface {
 	// given position is invalid, -1 is returned as the offset and the value
 	// ErrInvalidPackIndexPos is returned as the error.
 	OffsetForPos(pos PackIndexPos) (offset int64, err error)
+
+	// EntryForSha1 returns a PackIndexEntry whose Sha1() value matches that of
+	// the given object. If the given object is not found in the pack index, nil
+	// is returned.
+	EntryForSha1(object core.Sha1) PackIndexEntry
+
+	// Entries returns a slice that represents entries in the pack index.
+	Entries() []PackIndexEntry
 }
 
 // PackIndexPos represents an object's abstract position within a pack index.
