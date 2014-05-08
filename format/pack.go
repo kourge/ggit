@@ -117,14 +117,9 @@ func (p *Pack) Objects() []core.Sha1 {
 // pack file or decoding the pack entry within, nil is returned for the object
 // along with the error that occurred.
 func (p *Pack) ObjectBySha1(sha core.Sha1) (core.Object, error) {
-	pos := p.idx.PosForSha1(sha)
-	if pos == PackIndexPosNotFound {
+	if entry := p.idx.EntryForSha1(sha); entry == nil {
 		return nil, ErrObjectNotFoundInPack
-	}
-
-	if offset, err := p.idx.OffsetForPos(pos); err != nil {
-		return nil, err
-	} else if _, err := p.file.Seek(offset, 0); err != nil {
+	} else if _, err := p.file.Seek(entry.Offset(), 0); err != nil {
 		return nil, err
 	}
 

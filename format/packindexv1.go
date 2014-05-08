@@ -127,40 +127,6 @@ func (idx *PackIndexV1) EntryForSha1(object core.Sha1) PackIndexEntry {
 	return packIndexV1EntryWrapper{&idx.entries[pos + lower]}
 }
 
-// PosForSha1 returns the abstract position of the given object within the pack
-// index. If the given object is not found in the pack index, the value
-// PackIndexPosNotFound is returned.
-func (idx *PackIndexV1) PosForSha1(object core.Sha1) PackIndexPos {
-	lower := 0
-	if object[0] != 0x00 {
-		lower = int(idx.Fanout[int(object[0])-1])
-	}
-	upper := int(idx.Fanout[int(object[0])])
-	entries := idx.entries[lower:upper]
-
-	pos := sort.Search(len(entries), func(i int) bool {
-		return entries[i].ObjectName.Compare(object) >= 0
-	})
-
-	if pos == len(entries) {
-		return PackIndexPosNotFound
-	}
-
-	return PackIndexPos(pos + lower)
-}
-
-// OffsetForPos returns the byte offset of an object within the pack index's
-// corresponding pack file, given that object's abstract position. If the given
-// position is invalid, -1 is returned as the offset and the value
-// ErrInvalidPackIndexPos is returned as the error.
-func (idx *PackIndexV1) OffsetForPos(pos PackIndexPos) (offset int64, err error) {
-	if pos < PackIndexPos(0) || int(pos) >= len(idx.entries) {
-		return -1, ErrInvalidPackIndexPos
-	}
-
-	return int64(idx.entries[pos].Offset), nil
-}
-
 // Entries returns a slice that represents entries in this pack index.
 func (idx *PackIndexV1) Entries() []PackIndexEntry {
 	entries := make([]PackIndexEntry, len(idx.entries))

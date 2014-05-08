@@ -142,52 +142,6 @@ func (idx *PackIndexV2) EntryForSha1(object core.Sha1) PackIndexEntry {
 	return packIndexV2Entry{idx: idx, pos: pos + lower}
 }
 
-// PosForSha1 returns the abstract position of the given object within the pack
-// index. If the given object is not found in the pack index, the value
-// PackIndexPosNotFound is returned.
-func (idx *PackIndexV2) PosForSha1(object core.Sha1) PackIndexPos {
-	lower := 0
-	if object[0] != 0x00 {
-		lower = int(idx.Fanout[int(object[0])-1])
-	}
-	upper := int(idx.Fanout[int(object[0])])
-	entries := idx.objectNames[lower:upper]
-
-	pos := sort.Search(len(entries), func(i int) bool {
-		return entries[i].Compare(object) >= 0
-	})
-
-	if pos == len(entries) {
-		return PackIndexPosNotFound
-	}
-
-	return PackIndexPos(pos + lower)
-}
-
-// OffsetForPos returns the byte offset of an object within the pack index's
-// corresponding pack file, given that object's abstract position. If the given
-// position is invalid, -1 is returned as the offset and the value
-// ErrInvalidPackIndexPos is returned as the error.
-func (idx *PackIndexV2) OffsetForPos(pos PackIndexPos) (offset int64, err error) {
-	if pos < PackIndexPos(0) || int(pos) >= len(idx.offsets) {
-		return -1, ErrInvalidPackIndexPos
-	}
-
-	return int64(idx.offsets[pos]), nil
-}
-
-// Crc32ForPos returns the CRC-32 checksum of an object within the pack index's
-// corresponding pack file, given that object's abstract position. If the given
-// position is invalid, 0 is returned as the checksum and the value
-// ErrInvalidPackIndexPos is returned as the error.
-func (idx *PackIndexV2) Crc32ForPos(pos PackIndexPos) (checksum core.Crc32, err error) {
-	if pos < PackIndexPos(0) || int(pos) >= len(idx.offsets) {
-		return core.Crc32{}, ErrInvalidPackIndexPos
-	}
-
-	return idx.crc32Checksums[pos], nil
-}
-
 type packIndexV2Entry struct {
 	idx *PackIndexV2
 	pos int

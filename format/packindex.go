@@ -25,17 +25,6 @@ type PackIndex interface {
 	// Objects returns a sorted slice of objects present in the pack index.
 	Objects() []core.Sha1
 
-	// PosForSha1 returns the abstract position of the given object within the
-	// pack index. If the given object is not found in the pack index, the
-	// value PackIndexPosNotFound is returned.
-	PosForSha1(object core.Sha1) PackIndexPos
-
-	// OffsetForPos returns the byte offset of an object within the pack index's
-	// corresponding pack file, given that object's abstract position. If the
-	// given position is invalid, -1 is returned as the offset and the value
-	// ErrInvalidPackIndexPos is returned as the error.
-	OffsetForPos(pos PackIndexPos) (offset int64, err error)
-
 	// EntryForSha1 returns a PackIndexEntry whose Sha1() value matches that of
 	// the given object. If the given object is not found in the pack index, nil
 	// is returned.
@@ -44,17 +33,6 @@ type PackIndex interface {
 	// Entries returns a slice that represents entries in the pack index.
 	Entries() []PackIndexEntry
 }
-
-// PackIndexPos represents an object's abstract position within a pack index.
-// This position can be used to retrieve useful information, such as the offset
-// of an object in a pack.
-type PackIndexPos int
-
-const (
-	// The position of an object that is not found within a pack index is
-	// represented with PackIndexPosNotFound.
-	PackIndexPosNotFound PackIndexPos = -1
-)
 
 // PackIndexEntry represents an entry within a pack index. An entry is consisted
 // of three things: an offset into the corresponding pack, the SHA-1 of the
