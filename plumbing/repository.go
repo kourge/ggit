@@ -25,8 +25,43 @@ func (repo *Repository) Path() string {
 	return repo.path
 }
 
-// IsRepo returns true if the path used to initialize the Repository is in fact
-// a valid one.
+// Search looks for the closest valid repository, starting from the current path
+// of this Repository object.
+func (repo *Repository) Search() error {
+	// First expand the current path to an absolute form.
+	if path, err := filepath.Abs(repo.path); err == nil {
+		repo.path = path
+	} else {
+		return err
+	}
+	originalPath := repo.path
+
+	// If we are already given a .git directory, we're done.
+	if repo.IsValid() {
+		return nil
+	}
+
+	// We're probably in a non-bare repo. Start with that hypothetical path.
+	repo.path = filepath.Join(repo.path, ".git")
+
+	// Traverse upward until we hit a valid repo or root.
+	for !repo.IsValid() {
+		if repo.path == "/.git" {
+			break
+		}
+
+		repo.path = filepath.Clean(filepath.Join(repo.path, "..", "..", ".git"))
+	}
+
+	if repo.IsValid() {
+		return nil
+	}
+
+	return core.Errorf("Not a git repository (or any of the parent directories): %s", originalPath)
+}
+
+// IsRepo returns true if the path of the current Repository does in fact hold
+// a valid repository.
 func (repo *Repository) IsValid() bool {
 	dir, err := os.Open(repo.path)
 	if err != nil {
