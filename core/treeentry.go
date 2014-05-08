@@ -44,9 +44,6 @@ func (entry *TreeEntry) Decode(reader io.Reader) error {
 		return err
 	} else {
 		modeString = modeString[:len(modeString)-1]
-		if len(modeString) != 6 {
-			return errors.New("tree entry mode is not 6 characters long")
-		}
 		if mode, err := GitModeFromString(modeString); err != nil {
 			return errors.New("invalid tree entry mode")
 		} else {
