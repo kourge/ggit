@@ -124,7 +124,7 @@ func (idx *PackIndexV1) EntryForSha1(object core.Sha1) PackIndexEntry {
 		return nil
 	}
 
-	return packIndexV1EntryWrapper{&idx.entries[pos + lower]}
+	return packIndexV1EntryWrapper{&idx.entries[pos+lower]}
 }
 
 // Entries returns a slice that represents entries in this pack index.
