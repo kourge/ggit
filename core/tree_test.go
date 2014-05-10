@@ -80,3 +80,15 @@ func TestTree_Decode(t *testing.T) {
 		t.Errorf("tree.Decode() produced %v, want %v", actual, expected)
 	}
 }
+
+func TestTree_Entries(t *testing.T) {
+	var actual []TreeEntry = _fixtureTree.Entries()
+	var expected []TreeEntry = []TreeEntry{
+		_fixtureLicenseTreeEntry,
+		_fixtureReadmeTreeEntry,
+	}
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("tree.Entries() produced %v, want %v", actual, expected)
+	}
+}

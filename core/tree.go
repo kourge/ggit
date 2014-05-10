@@ -107,3 +107,13 @@ func (tree *Tree) load() {
 func (tree *Tree) sort() {
 	sort.Sort(TreeEntrySlice(tree.entries))
 }
+
+// Entries returns a slice of the sorted tree entries in this Tree.
+func (tree *Tree) Entries() []TreeEntry {
+	entries := make([]TreeEntry, len(tree.entries))
+	for i, entry := range tree.entries {
+		entries[i] = entry
+	}
+
+	return entries
+}
