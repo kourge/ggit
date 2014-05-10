@@ -38,10 +38,10 @@ func (mode GitMode) String() string {
 	return fmt.Sprintf("%06o", mode)
 }
 
-// Reader returns an io.Reader that formats the mode into a six-digit octal
-// string.
+// Reader returns an io.Reader that formats the mode into an octal string. Note
+// that this string is not left zero-padded to six characters.
 func (mode GitMode) Reader() io.Reader {
-	return strings.NewReader(mode.String())
+	return strings.NewReader(fmt.Sprintf("%o", mode))
 }
 
 // GitModeFromString attempts to convert a string to a GitMode. If the string
