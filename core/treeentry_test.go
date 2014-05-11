@@ -15,7 +15,7 @@ var (
 
 	_fixtureTreeEntry TreeEntry = TreeEntry{
 		Mode: _frw_r__r__,
-		Sha:  _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
+		Sha1: _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
 		Name: "README.md",
 	}
 	_fixtureTreeEntryString string = "100644 README.md\x00\x36\x18\xcb\x8c\x41\x31\x83\x98\x85\xac\x27\x3d\x74\xee\x2e\xb8\xa7\xdd\x69\x70"
@@ -38,7 +38,7 @@ var (
 `)}
 	_fixtureGitIgnoreTreeEntry TreeEntry = TreeEntry{
 		Mode: _frw_r__r__,
-		Sha:  _sha("458a3c1f135f68e9650d344525cd12a46d7048f5"),
+		Sha1: _sha("458a3c1f135f68e9650d344525cd12a46d7048f5"),
 		Name: ".gitignore",
 	}
 	_fixtureGitIgnoreHash   Sha1   = _sha("458a3c1f135f68e9650d344525cd12a46d7048f5")
@@ -86,8 +86,8 @@ func TestTreeEntryFromObject_Blob(t *testing.T) {
 		t.Errorf("treeEntry.Mode = %06o, want %06o", treeEntry.Mode, _frw_r__r__)
 	}
 
-	if treeEntry.Sha != _fixtureGitIgnoreHash {
-		t.Errorf("treeEntry.Sha = %v, want %v", treeEntry.Sha, _fixtureGitIgnoreHash)
+	if treeEntry.Sha1 != _fixtureGitIgnoreHash {
+		t.Errorf("treeEntry.Sha1 = %v, want %v", treeEntry.Sha1, _fixtureGitIgnoreHash)
 	}
 
 	if treeEntry.Name != name {
@@ -117,17 +117,17 @@ func TestTreeEntryFromObject_Unknown(t *testing.T) {
 func TestTreeEntrySlice_Sort(t *testing.T) {
 	_1 := TreeEntry{
 		Mode: _frw_r__r__,
-		Sha:  _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
+		Sha1: _sha("3618cb8c4131839885ac273d74ee2eb8a7dd6970"),
 		Name: "README.md",
 	}
 	_2 := TreeEntry{
 		Mode: _frw_r__r__,
-		Sha:  _sha("00268614f04567605359c96e714e834db9cebab6"),
+		Sha1: _sha("00268614f04567605359c96e714e834db9cebab6"),
 		Name: ".gitignore",
 	}
 	_3 := TreeEntry{
 		Mode: _frw_r__r__,
-		Sha:  _sha("bf4b7bee80cf3f910fce252f73b189f1f3c2042a"),
+		Sha1: _sha("bf4b7bee80cf3f910fce252f73b189f1f3c2042a"),
 		Name: "LICENSE",
 	}
 	treeEntries := []TreeEntry{_1, _2, _3}

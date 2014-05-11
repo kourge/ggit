@@ -14,7 +14,7 @@ import (
 type TreeEntry struct {
 	Mode GitMode
 	Name string
-	Sha  Sha1
+	Sha1 Sha1
 }
 
 var _ EncodeDecoder = &TreeEntry{}
@@ -29,7 +29,7 @@ func (entry TreeEntry) Reader() io.Reader {
 		bytes.NewReader([]byte{' '}),
 		strings.NewReader(entry.Name),
 		bytes.NewReader([]byte{0}),
-		entry.Sha.Reader(),
+		entry.Sha1.Reader(),
 	)
 }
 
@@ -63,7 +63,7 @@ func (entry *TreeEntry) Decode(reader io.Reader) error {
 	} else if err != nil {
 		return err
 	}
-	entry.Sha = checksum
+	entry.Sha1 = checksum
 
 	return nil
 }
@@ -80,7 +80,7 @@ func TreeEntryFromObject(object Object, mode GitMode, name string) (*TreeEntry, 
 		return nil, errors.New(message)
 	}
 
-	entry.Sha = NewStream(object).Hash()
+	entry.Sha1 = NewStream(object).Hash()
 	return entry, nil
 }
 
