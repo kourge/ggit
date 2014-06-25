@@ -72,9 +72,9 @@ func (s *GapSlice) locate(i int) (elem *list.Element, offset int) {
 	panic(Errorf("could not find element for index %d in GapSlice", i))
 }
 
-// Get attempts to fetch the item logically residing at index i. If the index
-// is within bounds, then v is the item retried and exists is set to true. If
-// the index is out of bounds, then v is set to nil and exists will be false.
+// Get attempts to fetch the item logically residing at index i. If the index is
+// within bounds, then v is the item retrieved and exists is set to true. If the
+// index is out of bounds, then v is set to nil and exists will be false.
 func (s *GapSlice) Get(i int) (v interface{}, exists bool) {
 	e, offset := s.locate(i)
 	if e == nil {
