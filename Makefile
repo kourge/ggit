@@ -9,5 +9,5 @@ clean:
 	rm ./ggit
 
 test:
-	go test ./core ./config ./format ./util ./plumbing ./porcelain
+	go test ./...
 
