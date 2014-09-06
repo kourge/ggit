@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/kourge/ggit/core"
@@ -21,11 +22,20 @@ var _ core.EncodeDecoder = Config{}
 func (config Config) Reader() io.Reader {
 	readers := make([]io.Reader, len(config)*2)
 
-	i := 0
-	for _, section := range config {
+	keys := make([]string, len(config))
+	{
+		i := 0
+		for k, _ := range config {
+			keys[i] = k
+			i++
+		}
+	}
+	sort.Strings(keys)
+
+	for i, name := range keys {
+		section := config[name]
 		readers[i*2] = section.Reader()
 		readers[i*2+1] = bytes.NewReader([]byte{'\n'})
-		i += 1
 	}
 
 	return io.MultiReader(readers[:len(readers)-1]...)

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -28,12 +29,21 @@ func (section *Section) Reader() io.Reader {
 	readers[1] = strings.NewReader(section.Name)
 	readers[2] = bytes.NewReader([]byte{']', '\n'})
 
-	i := 0
-	for k, v := range section.Dict {
+	keys := make([]string, len(section.Dict))
+	{
+		i := 0
+		for k, _ := range section.Dict {
+			keys[i] = k
+			i++
+		}
+	}
+	sort.Strings(keys)
+
+	for i, k := range keys {
+		v := section.Dict[k]
 		readers[i*3+offset+0] = bytes.NewReader([]byte{'\t'})
 		readers[i*3+offset+1] = (&Entry{k, v}).Reader()
 		readers[i*3+offset+2] = bytes.NewReader([]byte{'\n'})
-		i += 1
 	}
 
 	return io.MultiReader(readers...)

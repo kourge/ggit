@@ -31,11 +31,11 @@ var (
 	bare = false
 	name = "John Doe"`,
 		NormalizedString: `[core]
-	repositoryformatversion = 0
-	filemode = true
-	diff = auto
 	bare = false
+	diff = auto
+	filemode = true
 	name = "John Doe"
+	repositoryformatversion = 0
 `,
 	}
 )

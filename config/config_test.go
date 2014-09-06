@@ -40,15 +40,15 @@ repositoryformatversion = 0
 diff=auto
 	bare=false
 `,
-		NormalizedString: `[user]
-	name = "Jane Doe"
-	email = jane@example.com
-
-[core]
-	repositoryformatversion = 0
-	filemode = true
-	diff = auto
+		NormalizedString: `[core]
 	bare = false
+	diff = auto
+	filemode = true
+	repositoryformatversion = 0
+
+[user]
+	email = jane@example.com
+	name = "Jane Doe"
 `,
 	}
 )
@@ -88,10 +88,10 @@ func ExampleConfig_Reader() {
 	io.Copy(os.Stdout, defaultConfig.Reader())
 	// Output:
 	// [core]
-	// 	repositoryformatversion = 0
-	// 	filemode = true
 	// 	bare = false
-	// 	logallrefupdates = true
+	// 	filemode = true
 	// 	ignorecase = true
+	// 	logallrefupdates = true
 	// 	precomposeunicode = false
+	// 	repositoryformatversion = 0
 }
